@@ -10,13 +10,12 @@ public class Snake : MonoBehaviour {
 
 	// Grow in next movement?
 	bool ate = false;
-	bool over = false;	
-	// Tail Prefab
-	public GameObject tailPrefab;
 
-	//GameOver Object
-	public GameObject gameOver;
+	// Tail Prefab, GameOver object
+	public GameObject tailPrefab,gameOver;
 
+
+	//Walls
 	public GameObject topWall, bottomWall, rightWall, leftWall;
 
 
@@ -31,12 +30,7 @@ public class Snake : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if (over) {
-			gameOver.SetActive (true);
-			Time.timeScale = 0;
-		} else {
-			gameOver.SetActive(false);
-		}
+
 		if (this.name == "Player1") {
 			// Move in a new Direction?
 			if (Input.GetKey (KeyCode.D)) {
@@ -56,9 +50,7 @@ public class Snake : MonoBehaviour {
 					dir = Vector2.up;
 				}
 			}
-			if ((Time.timeScale == 0) && (Input.GetKey (KeyCode.Space))) {
-				Time.timeScale = 1;
-			}
+
 		} else if (this.name == "Player2") {
 			if (Input.GetKey (KeyCode.RightArrow)) {
 				if (dir != -Vector2.right) {
@@ -77,9 +69,7 @@ public class Snake : MonoBehaviour {
 					dir = Vector2.up;
 				}
 			}
-			if ((Time.timeScale == 0) && (Input.GetKey (KeyCode.Space))) {
-				Time.timeScale = 1;
-			}
+
 			
 		}
 
@@ -134,12 +124,12 @@ public class Snake : MonoBehaviour {
 		else if (coll.name.StartsWith ("TailPrefab")) {
 			//Debug.Log("hit with tail");
 
-			over = true;
+			gameOver.SetActive(true);
 		} else if ((coll.name.StartsWith ("Top")) || (coll.name.StartsWith ("Bottom")) || 
 			(coll.name.StartsWith ("Left")) || (coll.name.StartsWith ("Right"))) {
 
-			over = true;
-			Time.timeScale = 0;
+			gameOver.SetActive(true);
+
 		}
 
 

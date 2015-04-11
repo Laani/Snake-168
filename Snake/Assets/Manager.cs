@@ -7,12 +7,14 @@ public class Manager : MonoBehaviour {
         public GameObject player;
 
         // Title
-        private GameObject title;
+        private GameObject title, gameOver;
 
         void Start ()
         {
                 // Search for the Title game object, and save it
                 title = GameObject.Find ("Title");
+				gameOver = GameObject.Find ("Game Over");
+				gameOver.SetActive (false);
                 Time.timeScale=0;
         }
 
@@ -35,7 +37,7 @@ public class Manager : MonoBehaviour {
         public void GameOver ()
         {
                 // When the game ends, show the title.
-                title.SetActive (true);
+                gameOver.SetActive (true);
         }
 
         public bool IsPlaying ()

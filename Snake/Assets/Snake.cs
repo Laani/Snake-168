@@ -33,7 +33,13 @@ public class Snake : MonoBehaviour {
 	void Update () {
 		if (over) {
 			gameOver.SetActive (true);
+<<<<<<< HEAD
 		
+=======
+			Time.timeScale = 0;
+			// Find and acquire the Manager component within the scene, and call the GameOver method.
+            FindObjectOfType<Manager>().GameOver();
+>>>>>>> origin/master
 		} else {
 			gameOver.SetActive(false);
 		}

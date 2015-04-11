@@ -33,7 +33,7 @@ public class Snake : MonoBehaviour {
 	void Update () {
 		if (over) {
 			gameOver.SetActive (true);
-			Time.timeScale = 0;
+		
 		} else {
 			gameOver.SetActive(false);
 		}
@@ -56,9 +56,7 @@ public class Snake : MonoBehaviour {
 					dir = Vector2.up;
 				}
 			}
-			if ((Time.timeScale == 0) && (Input.GetKey (KeyCode.Space))) {
-				Time.timeScale = 1;
-			}
+
 		} else if (this.name == "Player2") {
 			if (Input.GetKey (KeyCode.RightArrow)) {
 				if (dir != -Vector2.right) {
@@ -77,9 +75,7 @@ public class Snake : MonoBehaviour {
 					dir = Vector2.up;
 				}
 			}
-			if ((Time.timeScale == 0) && (Input.GetKey (KeyCode.Space))) {
-				Time.timeScale = 1;
-			}
+
 			
 		}
 
@@ -139,7 +135,7 @@ public class Snake : MonoBehaviour {
 			(coll.name.StartsWith ("Left")) || (coll.name.StartsWith ("Right"))) {
 
 			over = true;
-			Time.timeScale = 0;
+
 		}
 
 

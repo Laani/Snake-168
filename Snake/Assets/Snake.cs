@@ -10,7 +10,7 @@ public class Snake : MonoBehaviour {
 
 	// Grow in next movement?
 	bool ate = false;
-	
+	bool over = false;	
 	// Tail Prefab
 	public GameObject tailPrefab;
 
@@ -23,6 +23,7 @@ public class Snake : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		gameOver.SetActive(false);
 		InvokeRepeating("Move", 0.1f, 0.1f);  
 	}
 
@@ -30,28 +31,58 @@ public class Snake : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		// Move in a new Direction?
-		if ((Input.GetKey (KeyCode.RightArrow)) || (Input.GetKey(KeyCode.D))) {
-			if (dir != -Vector2.right) {
-				dir = Vector2.right;
-			}
-		} else if ((Input.GetKey (KeyCode.DownArrow)) || (Input.GetKey(KeyCode.S))) {
-			if (dir != Vector2.up) {
-				dir = -Vector2.up;    // '-up' means 'down'
-			}
-		} else if ((Input.GetKey (KeyCode.LeftArrow))  || (Input.GetKey(KeyCode.A))){
-			if (dir != Vector2.right) {
-				dir = -Vector2.right; // '-right' means 'left'
-			}
-		} else if ((Input.GetKey (KeyCode.UpArrow))  || (Input.GetKey(KeyCode.W))){
-			if (dir != -Vector2.up) {
-				dir = Vector2.up;
-			}
+		if (over) {
+			gameOver.SetActive (true);
+			Time.timeScale = 0;
+		} else {
+			gameOver.SetActive(false);
 		}
-		if ((Time.timeScale == 0) && (Input.GetKey(KeyCode.Space)))
-		    {
-			Time.timeScale=1;
+		if (this.name == "Player1") {
+			// Move in a new Direction?
+			if (Input.GetKey (KeyCode.D)) {
+				if (dir != -Vector2.right) {
+					dir = Vector2.right;
+				}
+			} else if (Input.GetKey (KeyCode.S)) {
+				if (dir != Vector2.up) {
+					dir = -Vector2.up;    // '-up' means 'down'
+				}
+			} else if (Input.GetKey (KeyCode.A)) {
+				if (dir != Vector2.right) {
+					dir = -Vector2.right; // '-right' means 'left'
+				}
+			} else if (Input.GetKey (KeyCode.W)) {
+				if (dir != -Vector2.up) {
+					dir = Vector2.up;
+				}
+			}
+			if ((Time.timeScale == 0) && (Input.GetKey (KeyCode.Space))) {
+				Time.timeScale = 1;
+			}
+		} else if (this.name == "Player2") {
+			if (Input.GetKey (KeyCode.RightArrow)) {
+				if (dir != -Vector2.right) {
+					dir = Vector2.right;
+				}
+			} else if (Input.GetKey (KeyCode.DownArrow)) {
+				if (dir != Vector2.up) {
+					dir = -Vector2.up;    // '-up' means 'down'
+				}
+			} else if (Input.GetKey (KeyCode.LeftArrow)) {
+				if (dir != Vector2.right) {
+					dir = -Vector2.right; // '-right' means 'left'
+				}
+			} else if (Input.GetKey (KeyCode.UpArrow)) {
+				if (dir != -Vector2.up) {
+					dir = Vector2.up;
+				}
+			}
+			if ((Time.timeScale == 0) && (Input.GetKey (KeyCode.Space))) {
+				Time.timeScale = 1;
+			}
+			
 		}
+
 
 	}
 
@@ -95,16 +126,19 @@ public class Snake : MonoBehaviour {
 		if (coll.name.StartsWith ("foodPrefab")) {
 			// Get longer in next Move call
 			ate = true;
-//			Debug.Log(coll.transform);
+
 			// Remove the Food
 			Destroy (coll.gameObject);
 		}
 		// Collided with Tail or Border
 		else if (coll.name.StartsWith ("TailPrefab")) {
 			//Debug.Log("hit with tail");
-			Time.timeScale = 0;
+
+			over = true;
 		} else if ((coll.name.StartsWith ("Top")) || (coll.name.StartsWith ("Bottom")) || 
 			(coll.name.StartsWith ("Left")) || (coll.name.StartsWith ("Right"))) {
+
+			over = true;
 			Time.timeScale = 0;
 		}
 

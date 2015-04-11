@@ -19,6 +19,8 @@ public class Snake : MonoBehaviour {
 
 	public GameObject topWall, bottomWall, rightWall, leftWall;
 
+	private int score=0;
+
 	Vector2 dir;
 
 	// Use this for initialization
@@ -130,7 +132,7 @@ public class Snake : MonoBehaviour {
 		if (coll.name.StartsWith ("foodPrefab")) {
 			// Get longer in next Move call
 			ate = true;
-
+			score++;
 			// Remove the Food
 			Destroy (coll.gameObject);
 		}

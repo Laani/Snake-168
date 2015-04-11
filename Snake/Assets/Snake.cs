@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 
 public class Snake : MonoBehaviour {
-	Vector2 dir = Vector2.right;
+
 	List<Transform> tail = 	new List<Transform>();
 
 	// Grow in next movement?
@@ -19,11 +19,15 @@ public class Snake : MonoBehaviour {
 
 	public GameObject topWall, bottomWall, rightWall, leftWall;
 
-
+	Vector2 dir;
 
 	// Use this for initialization
 	void Start () {
-		gameOver.SetActive(false);
+		if (this.name == "Player1") {
+			dir = Vector2.right;
+		} else if (this.name == "Player2") {
+			dir = -Vector2.right;
+		}
 		InvokeRepeating("Move", 0.1f, 0.1f);  
 	}
 
@@ -32,7 +36,7 @@ public class Snake : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (over) {
-			gameOver.SetActive (true);
+
 
 			Time.timeScale = 0;
 			// Find and acquire the Manager component within the scene, and call the GameOver method.

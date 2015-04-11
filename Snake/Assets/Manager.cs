@@ -4,16 +4,17 @@ using System.Timers;
 public class Manager : MonoBehaviour {
 
 		// Player Prefab
-        public GameObject player;
+        public GameObject player1, player2;
 
         // Title
-        private GameObject title, gameOver;
+        private GameObject title, gameOver, pressStart;
 
         void Start ()
         {
                 // Search for the Title game object, and save it
                 title = GameObject.Find ("Title");
-				gameOver = GameObject.Find ("Game Over");
+				gameOver = GameObject.Find ("Over");
+				
 				gameOver.SetActive (false);
                 Time.timeScale=0;
         }
@@ -37,7 +38,15 @@ public class Manager : MonoBehaviour {
         public void GameOver ()
         {
                 // When the game ends, show the title.
-                gameOver.SetActive (true);
+                
+				gameOver.SetActive (true);
+
+				if (Input.GetKeyDown(KeyCode.Space)){
+
+					Application.LoadLevel (0);
+				}
+			
+				
         }
 
         public bool IsPlaying ()

@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Timers;
+using UnityEngine.UI;
+
 public class Manager : MonoBehaviour {
 
 		// Player Prefab
         public GameObject player1, player2;
 
         // Title
-        private GameObject title, gameOver, pressStart, player1Score, player2Score;
+		private GameObject title, gameOver, pressStart;
+		
 		
 
         void Start ()
@@ -18,9 +21,8 @@ public class Manager : MonoBehaviour {
 				
 				gameOver.SetActive (false);
                 Time.timeScale=0;
-			
-				player1Score = GameObject.Find ("Player1Score");
-				player2Score = GameObject.Find ("Player2Score");
+				
+				
 
         }
 

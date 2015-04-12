@@ -3,13 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
+using UnityEngine.UI;
+
 
 public class Snake : MonoBehaviour {
-
+	//List for tails
 	List<Transform> tail = 	new List<Transform>();
 
-	// Grow in next movement?
+	// Bool for just ate something
 	bool ate = false;
+
+	//Bool for if game is over or not
 	bool over = false;	
 	// Tail Prefab
 	public GameObject tailPrefab;
@@ -17,10 +21,16 @@ public class Snake : MonoBehaviour {
 	//GameOver Object
 	public GameObject gameOver;
 
+	//Wall Objects
 	public GameObject topWall, bottomWall, rightWall, leftWall;
 
+	//Score
 	private int score=0;
 
+	//Player score objects
+	public Text player1Score, player2Score;
+
+	//Direction for snake head
 	Vector2 dir;
 
 	// Use this for initialization
@@ -31,6 +41,11 @@ public class Snake : MonoBehaviour {
 			dir = -Vector2.right;
 		}
 		InvokeRepeating("Move", 0.1f, 0.1f);  
+
+	
+		
+
+
 	}
 
 
@@ -38,7 +53,6 @@ public class Snake : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (over) {
-
 
 			Time.timeScale = 0;
 			// Find and acquire the Manager component within the scene, and call the GameOver method.
@@ -66,6 +80,8 @@ public class Snake : MonoBehaviour {
 					dir = Vector2.up;
 				}
 			}
+			//Set score for Player 1
+			player1Score.text = "Player 1: " + score;
 
 		} else if (this.name == "Player2") {
 			if (Input.GetKey (KeyCode.RightArrow)) {
@@ -85,7 +101,8 @@ public class Snake : MonoBehaviour {
 					dir = Vector2.up;
 				}
 			}
-
+			//Set score for player 2
+			player2Score.text = "Player 2: " + score;
 			
 		}
 
@@ -132,13 +149,16 @@ public class Snake : MonoBehaviour {
 		if (coll.name.StartsWith ("foodPrefab")) {
 			// Get longer in next Move call
 			ate = true;
+
+			//increment score. score is kept individually by snake head. 
 			score++;
+
 			// Remove the Food
 			Destroy (coll.gameObject);
 		}
 		// Collided with Tail or Border
 		else if (coll.name.StartsWith ("TailPrefab")) {
-			//Debug.Log("hit with tail");
+		
 
 			over = true;
 		} else if ((coll.name.StartsWith ("Top")) || (coll.name.StartsWith ("Bottom")) || 
@@ -151,4 +171,5 @@ public class Snake : MonoBehaviour {
 
 
 	}
+
 }

@@ -157,7 +157,7 @@ public class Snake : MonoBehaviour {
 			Destroy (coll.gameObject);
 		}
 		// Collided with Tail or Border
-		else if (coll.name.StartsWith ("TailPrefab")) {
+		else if ((coll.name.StartsWith ("TailPrefab"))||(coll.name.StartsWith("Player")) ){
 		
 
 			over = true;
@@ -167,6 +167,7 @@ public class Snake : MonoBehaviour {
 			over = true;
 
 		}
+
 
 
 

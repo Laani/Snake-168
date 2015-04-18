@@ -6,6 +6,7 @@ using System.Timers;
 using UnityEngine.UI;
 
 
+
 public class Snake : MonoBehaviour {
 	//List for tails
 	List<Transform> tail = 	new List<Transform>();

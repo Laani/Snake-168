@@ -46,144 +46,19 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Alchemy\src\Alchemy\AccessPolicyServer.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Classes\Context.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Classes\Header.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Classes\Response.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Classes\UserContext.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Handlers\Authentication.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Handlers\Handler.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Handlers\IAuthentication.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Handlers\WebSocket\DataFrame.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Handlers\WebSocket\WebSocketHandler.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Handlers\WebSocket\hybi00\Authentication.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Handlers\WebSocket\hybi00\DataFrame.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Handlers\WebSocket\hybi00\Handler.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Handlers\WebSocket\hybi00\Handshakes.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Handlers\WebSocket\rfc6455\Authentication.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Handlers\WebSocket\rfc6455\DataFrame.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Handlers\WebSocket\rfc6455\FrameHeader.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Handlers\WebSocket\rfc6455\Handler.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Handlers\WebSocket\rfc6455\Handshakes.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\Properties\AssemblyInfo.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\TCPServer.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\WebSocketClient.cs" />
-     <Compile Include="Assets\Alchemy\src\Alchemy\WebSocketServer.cs" />
-     <Compile Include="Assets\Alchemy\test\Integration\Alchemy\ClientServer.cs" />
-     <Compile Include="Assets\Alchemy\test\Integration\Alchemy\ClientServerSubProtocol.cs" />
-     <Compile Include="Assets\Alchemy\test\Integration\Alchemy\Properties\AssemblyInfo.cs" />
-     <Compile Include="Assets\Alchemy\test\Unit\Alchemy\Handlers\WebSocket\hybi00\DataFrame.cs" />
-     <Compile Include="Assets\Alchemy\test\Unit\Alchemy\Handlers\WebSocket\hybi10\DataFrame.cs" />
-     <Compile Include="Assets\Alchemy\test\Unit\Alchemy\Properties\AssemblyInfo.cs" />
+     <Compile Include="Assets\Login.cs" />
      <Compile Include="Assets\Manager.cs" />
      <Compile Include="Assets\Snake.cs" />
      <Compile Include="Assets\SpawnFood.cs" />
      <Compile Include="Assets\loadOnClick.cs" />
-     <None Include="Assets\Alchemy\src\Alchemy\obj\Debug\Alchemy.csproj.FileListAbsolute.txt" />
-     <None Include="Assets\Alchemy\packages\NUnit.2.5.10.11092\tools\NUnitTests.VisualState.xml" />
-     <None Include="Assets\Alchemy\test\Unit\Alchemy\obj\Debug\Alchemy.csproj.FileListAbsolute.txt" />
-     <None Include="Assets\Alchemy\packages\NUnit.2.5.10.11092\tools\TestResult.xml" />
-     <None Include="Assets\Alchemy\packages\NUnit.2.5.10.11092\lib\nunit.framework.xml" />
-     <None Include="Assets\Alchemy\packages\NUnit.2.5.10.11092\license.txt" />
-     <None Include="Assets\Alchemy\test\Integration\Alchemy\bin\Debug\nunit.framework.xml" />
-     <None Include="Assets\Alchemy\test\Unit\Alchemy\bin\Debug\nunit.framework.xml" />
-     <None Include="Assets\Alchemy\packages\NUnit.2.5.10.11092\fit-license.txt" />
-     <None Include="Assets\Alchemy\test\Integration\Alchemy\obj\Debug\Alchemy.csproj.FileListAbsolute.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
- <Reference Include="log4net">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/lib/log4net.dll</HintPath>
+ <Reference Include="Mono.Data.Sqlite">
+ <HintPath>C:/Users/Kathy/Documents/GitHub/Snake-168/Snake/Assets/Plugins/Mono.Data.Sqlite.dll</HintPath>
  </Reference>
- <Reference Include="nunit.framework">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/lib/nunit.framework.dll</HintPath>
- </Reference>
- <Reference Include="nunit.mocks">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/lib/nunit.mocks.dll</HintPath>
- </Reference>
- <Reference Include="pnunit.framework">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/lib/pnunit.framework.dll</HintPath>
- </Reference>
- <Reference Include="nunit.framework">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/tools/nunit.framework.dll</HintPath>
- </Reference>
- <Reference Include="pnunit.framework">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/tools/pnunit.framework.dll</HintPath>
- </Reference>
- <Reference Include="pnunit.tests">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/tools/pnunit.tests.dll</HintPath>
- </Reference>
- <Reference Include="fit">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/tools/lib/fit.dll</HintPath>
- </Reference>
- <Reference Include="log4net">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/tools/lib/log4net.dll</HintPath>
- </Reference>
- <Reference Include="nunit-console-runner">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/tools/lib/nunit-console-runner.dll</HintPath>
- </Reference>
- <Reference Include="nunit-gui-runner">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/tools/lib/nunit-gui-runner.dll</HintPath>
- </Reference>
- <Reference Include="nunit.core">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/tools/lib/nunit.core.dll</HintPath>
- </Reference>
- <Reference Include="nunit.core.interfaces">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/tools/lib/nunit.core.interfaces.dll</HintPath>
- </Reference>
- <Reference Include="nunit.fixtures">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/tools/lib/nunit.fixtures.dll</HintPath>
- </Reference>
- <Reference Include="nunit.uiexception">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/tools/lib/nunit.uiexception.dll</HintPath>
- </Reference>
- <Reference Include="nunit.uikit">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/tools/lib/nunit.uikit.dll</HintPath>
- </Reference>
- <Reference Include="nunit.util">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/packages/NUnit.2.5.10.11092/tools/lib/nunit.util.dll</HintPath>
- </Reference>
- <Reference Include="Alchemy">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/src/Alchemy/bin/Debug/Alchemy.dll</HintPath>
- </Reference>
- <Reference Include="Alchemy">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/src/Alchemy/obj/Debug/Alchemy.dll</HintPath>
- </Reference>
- <Reference Include="Alchemy">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/test/Integration/Alchemy/bin/Debug/Alchemy.dll</HintPath>
- </Reference>
- <Reference Include="AlchemyIntegrationTest">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/test/Integration/Alchemy/bin/Debug/AlchemyIntegrationTest.dll</HintPath>
- </Reference>
- <Reference Include="nunit.framework">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/test/Integration/Alchemy/bin/Debug/nunit.framework.dll</HintPath>
- </Reference>
- <Reference Include="nunit.mocks">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/test/Integration/Alchemy/bin/Debug/nunit.mocks.dll</HintPath>
- </Reference>
- <Reference Include="pnunit.framework">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/test/Integration/Alchemy/bin/Debug/pnunit.framework.dll</HintPath>
- </Reference>
- <Reference Include="AlchemyIntegrationTest">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/test/Integration/Alchemy/obj/Debug/AlchemyIntegrationTest.dll</HintPath>
- </Reference>
- <Reference Include="Alchemy">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/test/Unit/Alchemy/bin/Debug/Alchemy.dll</HintPath>
- </Reference>
- <Reference Include="AlchemyUnitTest">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/test/Unit/Alchemy/bin/Debug/AlchemyUnitTest.dll</HintPath>
- </Reference>
- <Reference Include="nunit.framework">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/test/Unit/Alchemy/bin/Debug/nunit.framework.dll</HintPath>
- </Reference>
- <Reference Include="nunit.mocks">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/test/Unit/Alchemy/bin/Debug/nunit.mocks.dll</HintPath>
- </Reference>
- <Reference Include="pnunit.framework">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/test/Unit/Alchemy/bin/Debug/pnunit.framework.dll</HintPath>
- </Reference>
- <Reference Include="AlchemyUnitTest">
- <HintPath>C:/Users/Victor/Documents/GitHub/Snake-168/Snake/Assets/Alchemy/test/Unit/Alchemy/obj/Debug/AlchemyUnitTest.dll</HintPath>
+ <Reference Include="System.Data">
+ <HintPath>C:/Users/Kathy/Documents/GitHub/Snake-168/Snake/Assets/Plugins/System.Data.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.iOS.Extensions.Xcode">
  <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iossupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>

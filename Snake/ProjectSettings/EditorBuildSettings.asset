@@ -11,3 +11,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Main.unity
   - enabled: 1
     path: Assets/Scenes/GameOverScene.unity
+  - enabled: 1
+    path: Assets/Scenes/Player1Win.unity
+  - enabled: 1
+    path: Assets/Scenes/Player2Win.unity

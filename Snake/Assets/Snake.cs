@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,9 @@ public class Snake : MonoBehaviour {
 	public GameObject topWall, bottomWall, rightWall, leftWall;
 
 	//Score
-	private int score=0;
+	private int score = 0;
+
+
 
 	//Player score objects
 	public Text player1Score, player2Score;
@@ -60,6 +63,20 @@ public class Snake : MonoBehaviour {
             //FindObjectOfType<Manager>().GameOver();
 
             FindObjectOfType<loadOnClick>().LoadScene(2);
+            
+            string[] endp1 = player1Score.text.Split(':');
+            string[] endp2 = player2Score.text.Split(':');
+            Debug.Log(endp1[1]);
+            Debug.Log(endp2[1]);
+            if(Int32.Parse(endp1[1])> Int32.Parse(endp2[1]))
+            {
+            	FindObjectOfType<loadOnClick>().LoadScene(3);
+            }
+            else
+            {
+            	FindObjectOfType<loadOnClick>().LoadScene(4);
+            }
+            
 
 		} else {
 			gameOver.SetActive(false);
@@ -85,7 +102,7 @@ public class Snake : MonoBehaviour {
 			}
 			//Set score for Player 1
 			player1Score.text = "Player 1: " + score;
-
+			
 		} else if (this.name == "Player2") {
 			if (Input.GetKey (KeyCode.RightArrow)) {
 				if (dir != -Vector2.right) {
@@ -106,6 +123,7 @@ public class Snake : MonoBehaviour {
 			}
 			//Set score for player 2
 			player2Score.text = "Player 2: " + score;
+			
 			
 		}
 
@@ -155,6 +173,7 @@ public class Snake : MonoBehaviour {
 
 			//increment score. score is kept individually by snake head. 
 			score++;
+
 
 			// Remove the Food
 			Destroy (coll.gameObject);

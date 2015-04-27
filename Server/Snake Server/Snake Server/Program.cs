@@ -129,7 +129,7 @@ public class AsynchronousSocketListener
                 // client. Display it on the console.
                 Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
                     content.Length, content);
-                Console.WriteLine("\n\n");
+                // Console.WriteLine("\n\n");
 
                 if (content.Substring(0, 4) == "user")
                 {

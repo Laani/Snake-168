@@ -11,6 +11,8 @@ using UnityEngine.UI;
 
 public class dbLogin : MonoBehaviour {
 	public string username;
+
+	private Socket client;
 	
 	private const int port = 11000;
 	private static ManualResetEvent connectDone = 
@@ -34,10 +36,6 @@ public class dbLogin : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
-	}
-	
-	public void Submit () {
 		// Connect to a remote device.
 		try {
 			// Establish the remote endpoint for the socket.
@@ -48,55 +46,47 @@ public class dbLogin : MonoBehaviour {
 			IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
 			
 			// Create a TCP/IP socket.
-			Socket client = new Socket(AddressFamily.InterNetwork,
+			client = new Socket(AddressFamily.InterNetwork,
 			                           SocketType.Stream, ProtocolType.Tcp);
 			
 			// Connect to the remote endpoint.
 			client.BeginConnect( remoteEP, 
 			                    new AsyncCallback(ConnectCallback), client);
 			connectDone.WaitOne();
-
-			GameObject usernameGO = GameObject.Find ("Username");
-			InputField usernameIF = usernameGO.GetComponent<InputField> ();
-			string username = usernameIF.text;
-			
-			GameObject passwordGO = GameObject.Find ("Password");
-			InputField passwordIF = passwordGO.GetComponent<InputField> ();
-			string password = passwordIF.text;
-			
-			// Send test data to the remote device.
-			Send(client, "user " + username + "<EOF>");
-
-			Receive (client);
-			if (response != String.Empty) {
-				Debug.Log("Response received: " + response);
-				response = String.Empty;
-
-				Send (client, "pass " + password + "<EOF>");
-
-				Receive (client);
-				if (response != String.Empty) {
-					Debug.Log("Response received: " + response);
-				}
-			}
-			
-			// Release the socket.
-			/*try {
-				client.Shutdown(SocketShutdown.Both);
-			}
-			catch (SocketException e) {
-				Debug.Log ("Socket closed remotely");
-			}
-			client.Close();*/
-			
 		} catch (Exception e) {
 			Debug.Log(e.ToString());
 		}
 	}
 	
+	public void Submit () {
+		GameObject usernameGO = GameObject.Find ("Username");
+		InputField usernameIF = usernameGO.GetComponent<InputField> ();
+		string username = usernameIF.text;
+		
+		GameObject passwordGO = GameObject.Find ("Password");
+		InputField passwordIF = passwordGO.GetComponent<InputField> ();
+		string password = passwordIF.text;
+		
+		// Send test data to the remote device.
+		Send(client, "user " + username + "<EOF>");
+		Send (client, "pass " + password + "<EOF>");
+	}
+			
+		// Release the socket.
+		/*try {
+			client.Shutdown(SocketShutdown.Both);
+		}
+		catch (SocketException e) {
+			Debug.Log ("Socket closed remotely");
+		}
+		client.Close();*/
+	
 	// Update is called once per frame
 	void Update () {
-
+		if (response != String.Empty) {
+			Debug.Log ("Response received: " + response);
+			response = String.Empty;
+		}
 	}
 
 	private static void ConnectCallback(IAsyncResult ar) {

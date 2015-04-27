@@ -13,7 +13,7 @@ public class SpawnFood : MonoBehaviour {
 	void Start () {
 		// Spawn food every 4 seconds, starting in 3
 		InvokeRepeating("Spawn", 3, 3);
-		InvokeRepeating("Spawn", 3, 3);
+		// InvokeRepeating("Spawn", 3, 3);
 	}
 	
 	// Spawn one piece of food

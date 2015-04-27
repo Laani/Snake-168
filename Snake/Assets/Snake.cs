@@ -84,8 +84,9 @@ public class Snake : MonoBehaviour {
 				}
 			}
 			//Set score for Player 1
-			var loginManager = GameObject.Find("dbLogin").GetComponent<dbLogin>();
-			string username = loginManager.username;
+			dbLogin loginManager = GameObject.Find("dbLogin").GetComponent<dbLogin>();
+			string username = loginManager.getUser ();
+
 			player1Score.text = username + ": " + score;
 
 		} else if (this.name == "Player2") {

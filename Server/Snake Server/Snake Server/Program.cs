@@ -144,7 +144,7 @@ public class AsynchronousSocketListener
                 }
                 
                 // Echo the data back to the client.
-                Send(handler, "I got: " + content);
+                // Send(handler, "[ECHO] " + content + "<EOF>");
 
                 // Setup a new state object
                 StateObject newstate = new StateObject();
@@ -206,11 +206,12 @@ public class AsynchronousSocketListener
             if (correctPass == password)
             {
                 Console.WriteLine(username + " has logged in successfully.");
-                Send(handler, username + " has logged in successfully. Load game!");
+                Send(handler, "log<EOF>");
             }
             else
             {
                 Console.WriteLine(username + " has used the wrong password. Please try again.");
+                Send(handler, "wro<EOF>");
             }
         }
         else
@@ -219,7 +220,7 @@ public class AsynchronousSocketListener
             SQLiteCommand command2 = new SQLiteCommand(query, m_dbConnection);
             command2.ExecuteNonQuery();
             Console.WriteLine(username + " has been registered.");
-            Send(handler, username + " has been registered. Load game!");
+            Send(handler, "reg<EOF>");
         }
 
         reader.Close();

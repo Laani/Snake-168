@@ -10,16 +10,22 @@ using Mono.Data.Sqlite;
 using UnityEngine.UI;
 
 public class dbLogin : MonoBehaviour {
-	public string username;
+	
+	public static string username;
+	
+	private Socket client;
 
-	private Socket client = null;
+	private static bool stopped = false;
 	
 	private const int port = 11000;
-	private static ManualResetEvent connectDone = 
-		new ManualResetEvent(false);
-	private static String response = String.Empty;
-	private static bool responseRead = true;
+	private static ManualResetEvent connectDone;
+	private static String response;
+	// private static bool responseRead = true;
 
+	public string getUser() {
+		return username;
+	}
+	
 	public class StateObject {
 		// Client socket.
 		public Socket workSocket = null;
@@ -37,11 +43,18 @@ public class dbLogin : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		username = null;
+		
+		client = null;
 
+		connectDone = 
+			new ManualResetEvent(false);
+		response = String.Empty;
+		// private static bool responseRead = true;
 	}
 	
 	public void Submit () {
-		if (client = null) {
+		if (client == null) {
 			// Connect to a remote device.
 			try {
 				// Establish the remote endpoint for the socket.
@@ -62,19 +75,18 @@ public class dbLogin : MonoBehaviour {
 			} catch (Exception e) {
 				Debug.Log (e.ToString ());
 			}
-		} else {
-			GameObject usernameGO = GameObject.Find ("Username");
-			InputField usernameIF = usernameGO.GetComponent<InputField> ();
-			string username = usernameIF.text;
-		
-			GameObject passwordGO = GameObject.Find ("Password");
-			InputField passwordIF = passwordGO.GetComponent<InputField> ();
-			string password = passwordIF.text;
-		
-			// Send test data to the remote device.
-			Send (client, "user " + username + "<EOF>");
-			Send (client, "pass " + password + "<EOF>");
 		}
+		GameObject usernameGO = GameObject.Find ("Username");
+		InputField usernameIF = usernameGO.GetComponent<InputField> ();
+		username = usernameIF.text;
+		
+		GameObject passwordGO = GameObject.Find ("Password");
+		InputField passwordIF = passwordGO.GetComponent<InputField> ();
+		string password = passwordIF.text;
+		
+		// Send test data to the remote device.
+		Send (client, "user " + username + "<EOF>");
+		Send (client, "pass " + password + "<EOF>");
 	}
 			
 		// Release the socket.
@@ -88,12 +100,17 @@ public class dbLogin : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		Receive (client);
+		if (client != null && !stopped) {
+			Receive (client);
+		}
+		if (stopped) {
+			Application.LoadLevelAsync("Main");
+		}
 
-		if (!responseRead) {
+		/*if (!responseRead) {
 			Debug.Log ("Response received: " + response);
 			responseRead = true;
-		}
+		}*/
 	}
 
 	private static void ConnectCallback(IAsyncResult ar) {
@@ -141,17 +158,51 @@ public class dbLogin : MonoBehaviour {
 			if (bytesRead > 0) {
 				// There might be more data, so store the data received so far.
 				state.sb.Append(Encoding.ASCII.GetString(state.buffer,0,bytesRead));
-				
+
+				response = state.sb.ToString();
+				if (response.IndexOf("<EOF") > -1) {
+					Debug.Log ("Response received: " + response.Substring(0, response.Length - 5));
+					if (response.Substring(0, 3) == "log") {
+						Debug.Log (username + " has logged in successfully.");
+						/*try {
+							client.Shutdown(SocketShutdown.Both);
+						}
+						catch (SocketException e) {
+							Debug.Log ("Socket closed remotely");
+						}
+						client.Close(); */
+						stopped = true;
+
+					} else if (response.Substring (0,3) == "wro") {
+						Debug.Log("You have entered the wrong password for " + username + ". Please try again.");
+					} else if (response.Substring(0, 3) == "reg") {
+						Debug.Log(username + " has been registered.");
+						/*try {
+							client.Shutdown(SocketShutdown.Both);
+						}
+						catch (SocketException e) {
+							Debug.Log ("Socket closed remotely");
+						}
+						client.Close();*/
+						stopped = true;
+					}
+				}
+
+				StateObject newstate = new StateObject();
+				newstate.workSocket = client;
+
 				// Get the rest of the data.
-				client.BeginReceive(state.buffer,0,StateObject.BufferSize,0,
-				                    new AsyncCallback(ReceiveCallback), state);
-			} else {
+				if (client != null) {
+					client.BeginReceive(newstate.buffer,0,StateObject.BufferSize,0,
+				                    new AsyncCallback(ReceiveCallback), newstate);
+				}
+			} /*else {
 				// All the data has arrived; put it in response.
 				if (state.sb.Length > 1) {
 					responseRead = false;
 					response = state.sb.ToString();
 				}
-			}
+			}*/
 		} catch (Exception e) {
 			Debug.Log(e.ToString());
 		}

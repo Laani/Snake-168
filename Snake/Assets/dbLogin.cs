@@ -12,15 +12,13 @@ using UnityEngine.UI;
 public class dbLogin : MonoBehaviour {
 	public string username;
 
-	private Socket client;
-
-	private int countdown = 3000;
+	private Socket client = null;
 	
 	private const int port = 11000;
 	private static ManualResetEvent connectDone = 
 		new ManualResetEvent(false);
 	private static String response = String.Empty;
-	private static bool responseRead = false;
+	private static bool responseRead = true;
 
 	public class StateObject {
 		// Client socket.
@@ -39,40 +37,44 @@ public class dbLogin : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		// Connect to a remote device.
-		try {
-			// Establish the remote endpoint for the socket.
-			// The name of the 
-			// remote device is "host.contoso.com".
-			IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-			IPAddress ipAddress = ipHostInfo.AddressList[0];
-			IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
-			
-			// Create a TCP/IP socket.
-			client = new Socket(AddressFamily.InterNetwork,
-			                           SocketType.Stream, ProtocolType.Tcp);
-			
-			// Connect to the remote endpoint.
-			client.BeginConnect( remoteEP, 
-			                    new AsyncCallback(ConnectCallback), client);
-			connectDone.WaitOne();
-		} catch (Exception e) {
-			Debug.Log(e.ToString());
-		}
+
 	}
 	
 	public void Submit () {
-		GameObject usernameGO = GameObject.Find ("Username");
-		InputField usernameIF = usernameGO.GetComponent<InputField> ();
-		string username = usernameIF.text;
+		if (client = null) {
+			// Connect to a remote device.
+			try {
+				// Establish the remote endpoint for the socket.
+				// The name of the 
+				// remote device is "host.contoso.com".
+				IPHostEntry ipHostInfo = Dns.GetHostEntry (Dns.GetHostName ());
+				IPAddress ipAddress = ipHostInfo.AddressList [0];
+				IPEndPoint remoteEP = new IPEndPoint (ipAddress, port);
+			
+				// Create a TCP/IP socket.
+				client = new Socket (AddressFamily.InterNetwork,
+			                    SocketType.Stream, ProtocolType.Tcp);
+			
+				// Connect to the remote endpoint.
+				client.BeginConnect (remoteEP, 
+			                    new AsyncCallback (ConnectCallback), client);
+				connectDone.WaitOne ();
+			} catch (Exception e) {
+				Debug.Log (e.ToString ());
+			}
+		} else {
+			GameObject usernameGO = GameObject.Find ("Username");
+			InputField usernameIF = usernameGO.GetComponent<InputField> ();
+			string username = usernameIF.text;
 		
-		GameObject passwordGO = GameObject.Find ("Password");
-		InputField passwordIF = passwordGO.GetComponent<InputField> ();
-		string password = passwordIF.text;
+			GameObject passwordGO = GameObject.Find ("Password");
+			InputField passwordIF = passwordGO.GetComponent<InputField> ();
+			string password = passwordIF.text;
 		
-		// Send test data to the remote device.
-		Send(client, "user " + username + "<EOF>");
-		Send (client, "pass " + password + "<EOF>");
+			// Send test data to the remote device.
+			Send (client, "user " + username + "<EOF>");
+			Send (client, "pass " + password + "<EOF>");
+		}
 	}
 			
 		// Release the socket.

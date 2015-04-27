@@ -59,7 +59,7 @@ public class Snake : MonoBehaviour {
 			// Find and acquire the Manager component within the scene, and call the GameOver method.
             //FindObjectOfType<Manager>().GameOver();
 
-            FindObjectOfType<loadOnClick>().LoadScene(2);
+            FindObjectOfType<loadOnClick>().LoadScene(3);
 
 		} else {
 			gameOver.SetActive(false);

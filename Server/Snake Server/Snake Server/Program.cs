@@ -134,12 +134,12 @@ public class AsynchronousSocketListener
                 if (content.Substring(0, 4) == "user")
                 {
                     Console.WriteLine("Got a username");
-                    username = content.Substring(5);
+                    username = content.Substring(5, content.Length - 10);
                 }
                 else if (content.Substring(0, 4) == "pass")
                 {
                     Console.WriteLine("Got a password");
-                    password = content.Substring(5);
+                    password = content.Substring(5, content.Length - 10);
                     DbLogin(username, password, handler);
                 }
                 

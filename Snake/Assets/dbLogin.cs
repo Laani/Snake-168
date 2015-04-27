@@ -13,11 +13,14 @@ public class dbLogin : MonoBehaviour {
 	public string username;
 
 	private Socket client;
+
+	private int countdown = 3000;
 	
 	private const int port = 11000;
 	private static ManualResetEvent connectDone = 
 		new ManualResetEvent(false);
 	private static String response = String.Empty;
+	private static bool responseRead = false;
 
 	public class StateObject {
 		// Client socket.
@@ -83,9 +86,11 @@ public class dbLogin : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (response != String.Empty) {
+		Receive (client);
+
+		if (!responseRead) {
 			Debug.Log ("Response received: " + response);
-			response = String.Empty;
+			responseRead = true;
 		}
 	}
 
@@ -141,6 +146,7 @@ public class dbLogin : MonoBehaviour {
 			} else {
 				// All the data has arrived; put it in response.
 				if (state.sb.Length > 1) {
+					responseRead = false;
 					response = state.sb.ToString();
 				}
 			}

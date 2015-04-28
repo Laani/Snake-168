@@ -1,9 +1,11 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\dbLogin.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Snake.cs">
     <Files>
-      <File FileName="Assets\dbLogin.cs" Line="190" Column="5" />
-      <File FileName="Assets\Snake.cs" Line="101" Column="50" />
+      <File FileName="Assets\dbLogin.cs" Line="190" Column="1" />
+      <File FileName="Assets\Manager.cs" Line="27" Column="10" />
+      <File FileName="Assets\SpawnFood.cs" Line="37" Column="1" />
+      <File FileName="Assets\Snake.cs" Line="94" Column="33" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

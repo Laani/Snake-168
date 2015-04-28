@@ -105,6 +105,7 @@ public class dbLogin : MonoBehaviour {
 		}
 		if (stopped) {
 			Application.LoadLevelAsync("Main");
+			stopped = false;
 		}
 
 		/*if (!responseRead) {

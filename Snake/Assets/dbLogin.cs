@@ -1,12 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Data;
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Text;
-using Mono.Data.Sqlite;
 using UnityEngine.UI;
 
 public class dbLogin : MonoBehaviour {

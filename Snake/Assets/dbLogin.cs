@@ -23,6 +23,26 @@ public class dbLogin : MonoBehaviour {
 	public string getUser() {
 		return username;
 	}
+
+	public  string Md5Sum(string strToEncrypt)
+	{
+		System.Text.UTF8Encoding ue = new System.Text.UTF8Encoding();
+		byte[] bytes = ue.GetBytes(strToEncrypt);
+		
+		// encrypt bytes
+		System.Security.Cryptography.MD5CryptoServiceProvider md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+		byte[] hashBytes = md5.ComputeHash(bytes);
+		
+		// Convert the encrypted bytes back to a string (base 16)
+		string hashString = "";
+		
+		for (int i = 0; i < hashBytes.Length; i++)
+		{
+			hashString += System.Convert.ToString(hashBytes[i], 16).PadLeft(2, '0');
+		}
+		
+		return hashString.PadLeft(32, '0');
+	}
 	
 	public class StateObject {
 		// Client socket.
@@ -81,6 +101,10 @@ public class dbLogin : MonoBehaviour {
 		GameObject passwordGO = GameObject.Find ("Password");
 		InputField passwordIF = passwordGO.GetComponent<InputField> ();
 		string password = passwordIF.text;
+
+		// Encrypt the password
+
+		password = Md5Sum (password);
 		
 		// Send test data to the remote device.
 		Send (client, "user " + username + "<EOF>");

@@ -7,3 +7,10 @@ C:\Users\Kathy\Documents\GitHub\Snake-168\Server\Snake Server\Snake Server\obj\D
 C:\Users\Kathy\Documents\GitHub\Snake-168\Server\Snake Server\Snake Server\obj\Debug\Snake Server.pdb
 C:\Users\Kathy\Documents\GitHub\Snake-168\Server\Snake Server\Snake Server\bin\Debug\System.Data.SQLite.dll
 C:\Users\Kathy\Documents\GitHub\Snake-168\Server\Snake Server\Snake Server\bin\Debug\System.Data.SQLite.xml
+C:\Users\Victor\Documents\GitHub\Snake-168\Server\Snake Server\Snake Server\obj\Debug\Snake Server.csprojResolveAssemblyReference.cache
+C:\Users\Victor\Documents\GitHub\Snake-168\Server\Snake Server\Snake Server\bin\Debug\Snake Server.exe
+C:\Users\Victor\Documents\GitHub\Snake-168\Server\Snake Server\Snake Server\bin\Debug\Snake Server.pdb
+C:\Users\Victor\Documents\GitHub\Snake-168\Server\Snake Server\Snake Server\bin\Debug\System.Data.SQLite.dll
+C:\Users\Victor\Documents\GitHub\Snake-168\Server\Snake Server\Snake Server\bin\Debug\System.Data.SQLite.xml
+C:\Users\Victor\Documents\GitHub\Snake-168\Server\Snake Server\Snake Server\obj\Debug\Snake Server.exe
+C:\Users\Victor\Documents\GitHub\Snake-168\Server\Snake Server\Snake Server\obj\Debug\Snake Server.pdb

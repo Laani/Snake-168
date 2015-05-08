@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Collections.Generic;
 using System.Data.SQLite;
-
+using Snake_Server;
 // State object for reading client data asynchronously
 public class StateObject
 {
@@ -27,6 +27,11 @@ public class AsynchronousSocketListener
 
     public static String username = String.Empty;
     public static String password = String.Empty;
+
+    public static Game[] games = new Game[20];
+    public static int numOfGames = 0;
+    public static String[] playerNum = new String[2] {"one", "two"};
+
 
     public AsynchronousSocketListener()
     {
@@ -141,6 +146,34 @@ public class AsynchronousSocketListener
                     Console.WriteLine("Got a password");
                     password = content.Substring(5, content.Length - 10);
                     DbLogin(username, password, handler);
+
+
+                    if (games[numOfGames].totalPlayers()==0) //#Victor
+                    {
+                        games[numOfGames]=new Game(handler); //makes new game if the current game has not been created yet
+                        Send(handler, "one");
+                    }
+                    
+                    else 
+                    {
+                        games[numOfGames].addPlayer(handler);
+                        Send(handler, "two");
+                    }
+                    if (games[numOfGames].isGameFull())
+                    {
+                        Player[] sending = games[numOfGames].playerHandlers();
+                        numOfGames++;
+                        SendToAllPlayers(sending, "sta");
+                    }
+
+                }
+                else if (content.Substring(0, 3) == "head")
+                {
+                    
+                }
+                else if (content.Substring(0, 3) == "tail")
+                {
+
                 }
                 
                 // Echo the data back to the client.
@@ -162,6 +195,28 @@ public class AsynchronousSocketListener
             }
         }
     }
+
+    private static void SendToAllPlayers(Player[] players, String data)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            Send(players[i].handler(), data);
+        }
+    }
+
+    private static void SendToOtherPlayers(Socket handler, String data)
+    {
+        Player[] sending = games[numOfGames].playerHandlers();
+        for (int i = 0; i < 4; i++)
+        {
+            if (sending[i].handler()!=handler)
+            {
+                Send(sending[i].handler(), data);
+            }
+            
+        }
+    }
+
 
     private static void Send(Socket handler, String data)
     {

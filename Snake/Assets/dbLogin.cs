@@ -10,11 +10,12 @@ using UnityEngine.UI;
 public class dbLogin : MonoBehaviour {
 	
 	public static string username;
-	
+	public static int playerNum;
+
 	private Socket client;
 
 	private static bool stopped = false;
-	
+	private static bool startGame = false;
 	private const int port = 11000;
 	private static ManualResetEvent connectDone;
 	private static String response;
@@ -22,6 +23,15 @@ public class dbLogin : MonoBehaviour {
 
 	public string getUser() {
 		return username;
+	}
+
+	public int getPlayerNum(){
+		return playerNum;
+	}
+
+	public void SendToServer(String data)
+	{
+		Send (client, data);
 	}
 
 	public  string Md5Sum(string strToEncrypt)
@@ -122,14 +132,15 @@ public class dbLogin : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
 		if (client != null && !stopped) {
 			Receive (client);
 		}
 		if (stopped) {
-			Application.LoadLevelAsync("Main");
+			Debug.Log("opening load page");
+			Application.LoadLevelAsync(4);
 			stopped = false;
 		}
-
 		/*if (!responseRead) {
 			Debug.Log ("Response received: " + response);
 			responseRead = true;
@@ -183,6 +194,7 @@ public class dbLogin : MonoBehaviour {
 				state.sb.Append(Encoding.ASCII.GetString(state.buffer,0,bytesRead));
 
 				response = state.sb.ToString();
+				Debug.Log(response);
 				if (response.IndexOf("<EOF") > -1) {
 					Debug.Log ("Response received: " + response.Substring(0, response.Length - 5));
 					if (response.Substring(0, 3) == "log") {
@@ -209,6 +221,21 @@ public class dbLogin : MonoBehaviour {
 						client.Close();*/
 						stopped = true;
 					}
+					else if (response.Substring(0,3) == "sta")
+					{
+						startGame = true;
+						//Application.LoadLevel("Main");
+					}else if (response.Substring(0,3) == "one")
+					{
+						Debug.Log ("you are player one");
+						playerNum=1;
+						//Application.LoadLevel("Main");
+					}else if (response.Substring(0,3) == "two")
+					{
+						Debug.Log ("you are player two");
+						playerNum=2;
+						//Application.LoadLevel("Main");
+					}
 				}
 
 				StateObject newstate = new StateObject();
@@ -231,7 +258,7 @@ public class dbLogin : MonoBehaviour {
 		}
 	}
 	
-	private static void Send(Socket client, String data) {
+	public static void Send(Socket client, String data) {
 		// Convert the string data to byte data using ASCII encoding.
 		byte[] byteData = Encoding.ASCII.GetBytes(data);
 		

@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 
 
+
 public class Snake : MonoBehaviour {
 	//List for tails
 	List<Transform> tail = 	new List<Transform>();
@@ -25,6 +26,7 @@ public class Snake : MonoBehaviour {
 	//Wall Objects
 	public GameObject topWall, bottomWall, rightWall, leftWall;
 
+	dbLogin networkObject;
 	//Score
 	private int score=0;
 
@@ -43,8 +45,7 @@ public class Snake : MonoBehaviour {
 		}
 		InvokeRepeating("Move", 0.1f, 0.1f);  
 
-	
-		
+		//networkObject = GameObject.Find ("dblogin").GetComponent<dbLogin>();
 
 
 	}
@@ -83,6 +84,7 @@ public class Snake : MonoBehaviour {
 					dir = Vector2.up;
 				}
 			}
+
 			//Set score for Player 1
 			dbLogin loginManager = GameObject.Find("dbLogin").GetComponent<dbLogin>();
 			string username = loginManager.getUser ();
@@ -114,6 +116,12 @@ public class Snake : MonoBehaviour {
 
 
 	}
+
+	string HeadData()
+	{
+
+	}
+
 
 	void Move() {
 		// Save current position (gap will be here)

@@ -37,6 +37,19 @@ namespace Snake_Server
                 }
             }
         }
+
+        public bool playerInThisGame(Socket handler)
+        {
+            for (int i =0; i<players.Length;i++)
+            {
+                if (players[i].handler() == handler)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public int totalPlayers()
         {
             return numOfPlayers;

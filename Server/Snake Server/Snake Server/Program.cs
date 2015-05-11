@@ -30,9 +30,9 @@ public class AsynchronousSocketListener
 
     public static Game[] games = new Game[20];
     public static int numOfGames = 0;
-    public static String[] playerNum = new String[2] {"one", "two"};
+    public static String[] playerNum = new String[2] { "one", "two" };
 
-
+    private static bool loggedInSuccessfully = false;
     public AsynchronousSocketListener()
     {
     }
@@ -145,37 +145,50 @@ public class AsynchronousSocketListener
                 {
                     Console.WriteLine("Got a password");
                     password = content.Substring(5, content.Length - 10);
+                 
                     DbLogin(username, password, handler);
-
-
-                    if (games[numOfGames].totalPlayers()==0) //#Victor
+                    if (loggedInSuccessfully)
                     {
-                        games[numOfGames]=new Game(handler); //makes new game if the current game has not been created yet
-                        Send(handler, "one");
-                    }
-                    
-                    else 
-                    {
-                        games[numOfGames].addPlayer(handler);
-                        Send(handler, "two");
-                    }
-                    if (games[numOfGames].isGameFull())
-                    {
-                        Player[] sending = games[numOfGames].playerHandlers();
-                        numOfGames++;
-                        SendToAllPlayers(sending, "sta");
-                    }
+                        if (games[numOfGames] == null)
+                        {
+                            games[numOfGames] = new Game(handler);
+                            Send(handler, "one<EOF>");
+                          
+                        }
 
+                        else if (games[numOfGames].isGameNotFull()) //if the current game isn't full, then add player
+                        {
+                            games[numOfGames].addPlayer(handler);
+                            Send(handler, "two<EOF>");
+                        }
+                        if (games[numOfGames].isGameFull()) //if game is full, send a start message to all players of the current game, move index up by one
+                        {
+                            Player[] sending = games[numOfGames].playerHandlers();
+                            SendToAllPlayers(sending, "sta<EOF>");
+                            numOfGames++;
+                        }
+                        loggedInSuccessfully = false;
+                    }
                 }
-                else if (content.Substring(0, 3) == "head")
+                else if (content.Substring(0, 4) == "head")
                 {
-                    
+                    String head = content.Substring(5, content.Length - 10);
+                    Player[] allPlayerInGame = findGameWithHandler(handler);
+                    if (allPlayerInGame.Length != 0)
+                    {
+                        SendToOtherPlayers(handler, allPlayerInGame, "hea " + head + "<EOF>");
+                    }
                 }
-                else if (content.Substring(0, 3) == "tail")
+                else if (content.Substring(0, 4) == "tail")
                 {
-
+                    String tail = content.Substring(5, content.Length - 10);
+                    Player[] allPlayerInGame = findGameWithHandler(handler);
+                    if (allPlayerInGame.Length != 0)
+                    {
+                        SendToOtherPlayers(handler, allPlayerInGame, "tai " + tail + "<EOF>");
+                    }
                 }
-                
+
                 // Echo the data back to the client.
                 // Send(handler, "[ECHO] " + content + "<EOF>");
 
@@ -196,24 +209,38 @@ public class AsynchronousSocketListener
         }
     }
 
+    private static Player[] findGameWithHandler(Socket handler)
+    {
+        for (int i = 0; i < games.Length; i++)
+        {
+            if (games[i].playerInThisGame(handler))
+            {
+                return games[i].players;
+            }
+        }
+        Player[] empty = new Player[0];
+        return empty;
+    }
+
+
     private static void SendToAllPlayers(Player[] players, String data)
     {
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < players.Length; i++)
         {
             Send(players[i].handler(), data);
         }
     }
 
-    private static void SendToOtherPlayers(Socket handler, String data)
+    private static void SendToOtherPlayers(Socket handler, Player[] sendingTo, String data)
     {
-        Player[] sending = games[numOfGames].playerHandlers();
-        for (int i = 0; i < 4; i++)
+        //Player[] sending = games[numOfGames].playerHandlers();
+        for (int i = 0; i < sendingTo.Length; i++)
         {
-            if (sending[i].handler()!=handler)
+            if (sendingTo[i].handler() != handler)
             {
-                Send(sending[i].handler(), data);
+                Send(sendingTo[i].handler(), data);
             }
-            
+
         }
     }
 
@@ -226,6 +253,7 @@ public class AsynchronousSocketListener
         // Begin sending the data to the remote device.
         handler.BeginSend(byteData, 0, byteData.Length, 0,
             new AsyncCallback(SendCallback), handler);
+        //Console.WriteLine("Sent " + data + "to client " + handler.AddressFamily);
     }
 
     private static void SendCallback(IAsyncResult ar)
@@ -250,7 +278,7 @@ public class AsynchronousSocketListener
         SQLiteConnection m_dbConnection =
             new SQLiteConnection("Data Source=dbGame.db;Version=3;");
         m_dbConnection.Open();
-        
+
         string query = "SELECT username, password FROM tb_users WHERE username = '" + username + "'";
         SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
         SQLiteDataReader reader = command.ExecuteReader();
@@ -261,6 +289,7 @@ public class AsynchronousSocketListener
             if (correctPass == password)
             {
                 Console.WriteLine(username + " has logged in successfully.");
+                loggedInSuccessfully = true;
                 Send(handler, "log<EOF>");
             }
             else

@@ -28,11 +28,14 @@ public class AsynchronousSocketListener
     public static String username = String.Empty;
     public static String password = String.Empty;
 
-    public static Game[] games = new Game[20];
+    public static List<Game> games=new List<Game>();
+    
     public static int numOfGames = 0;
     public static String[] playerNum = new String[2] { "one", "two" };
 
     private static bool loggedInSuccessfully = false;
+
+    static int times = 0;
     public AsynchronousSocketListener()
     {
     }
@@ -115,6 +118,7 @@ public class AsynchronousSocketListener
         // from the asynchronous state object.
         StateObject state = (StateObject)ar.AsyncState;
         Socket handler = state.workSocket;
+        //games.Add(new Game());
 
         // Read data from the client socket. 
         int bytesRead = handler.EndReceive(ar);
@@ -147,34 +151,75 @@ public class AsynchronousSocketListener
                     password = content.Substring(5, content.Length - 10);
                  
                     DbLogin(username, password, handler);
+                    bool addedPlayer = false;
                     if (loggedInSuccessfully)
                     {
-                        if (games[numOfGames] == null)
+                        if ((games.Count==0)&& (addedPlayer==false)) //if no games are initialized
                         {
-                            games[numOfGames] = new Game(handler);
+                            games.Add(new Game(handler));
                             Send(handler, "one<EOF>");
-                          
+                            times++;
+                            Console.WriteLine(times.ToString());
+                            addedPlayer = true;
                         }
+                        else if (addedPlayer==false)//if there are initialized games
+                        {
+                            /*For all initialized games, look for ones that aren't full. 
+                             Add player if a non-full game is found*/
+                            for (int i = 0; i < games.Count; i++)
+                            {
+                                if (games[i].isGameNotFull())
+                                {
+                                    String sendPlayerNumber = games[i].addPlayer(handler);
+                                    Send(handler, sendPlayerNumber);
+                                    addedPlayer = true;
+                                    if (games[i].isGameFull())
+                                    {
+                                        SendToAllPlayers(games[i].playerHandlers(), "sta<EOF>");
+                                    }
+                                }
+                            }
 
-                        else if (games[numOfGames].isGameNotFull()) //if the current game isn't full, then add player
-                        {
-                            games[numOfGames].addPlayer(handler);
-                            Send(handler, "two<EOF>");
+                            /*if there are no empty/nonfull games, create a new one for this player*/
+                            if (addedPlayer == false)
+                            {
+                                games.Add(new Game(handler));
+                                Send(handler, "one<EOF>");
+
+                                times++;
+                                Console.WriteLine(times.ToString());
+
+                                addedPlayer = true;
+                            }
                         }
-                        if (games[numOfGames].isGameFull()) //if game is full, send a start message to all players of the current game, move index up by one
-                        {
-                            Player[] sending = games[numOfGames].playerHandlers();
-                            SendToAllPlayers(sending, "sta<EOF>");
-                            numOfGames++;
-                        }
+                        
+
+
+
+
+                        //else if (games[numOfGames].isGameNotFull()) //if the current game isn't full, then add player
+                        //{
+                        //    games[numOfGames].addPlayer(handler);
+                        //    Send(handler, "two<EOF>");
+                        //}
+                        //if (games[numOfGames].isGameFull()) //if game is full, send a start message to all players of the current game, move index up by one
+                        //{
+                        //    List<Player> sending = games[numOfGames].playerHandlers();
+                        //    Console.WriteLine("sending has " + sending.Count + " items");
+                        //    Console.WriteLine(sending[0].playerHandler);
+                        //    Console.WriteLine(sending[1].playerHandler);
+                        //    SendToAllPlayers(sending, "sta<EOF>");
+                        //    numOfGames++;
+                        //}
                         loggedInSuccessfully = false;
+                        addedPlayer = false;
                     }
                 }
                 else if (content.Substring(0, 4) == "head")
                 {
                     String head = content.Substring(5, content.Length - 10);
-                    Player[] allPlayerInGame = findGameWithHandler(handler);
-                    if (allPlayerInGame.Length != 0)
+                    List<Player> allPlayerInGame = findGameWithHandler(handler);
+                    if (allPlayerInGame.Count != 0)
                     {
                         SendToOtherPlayers(handler, allPlayerInGame, "hea " + head + "<EOF>");
                     }
@@ -182,8 +227,8 @@ public class AsynchronousSocketListener
                 else if (content.Substring(0, 4) == "tail")
                 {
                     String tail = content.Substring(5, content.Length - 10);
-                    Player[] allPlayerInGame = findGameWithHandler(handler);
-                    if (allPlayerInGame.Length != 0)
+                    List<Player> allPlayerInGame = findGameWithHandler(handler);
+                    if (allPlayerInGame.Count != 0)
                     {
                         SendToOtherPlayers(handler, allPlayerInGame, "tai " + tail + "<EOF>");
                     }
@@ -203,38 +248,45 @@ public class AsynchronousSocketListener
             else
             {
                 // Not all data received. Get more.
-                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                new AsyncCallback(ReadCallback), state);
+               // handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+               // new AsyncCallback(ReadCallback), state);
             }
         }
     }
 
-    private static Player[] findGameWithHandler(Socket handler)
+    private static List<Player> findGameWithHandler(Socket handler)
     {
-        for (int i = 0; i < games.Length; i++)
+        for (int i = 0; i < games.Count; i++)
         {
             if (games[i].playerInThisGame(handler))
             {
                 return games[i].players;
             }
         }
-        Player[] empty = new Player[0];
-        return empty;
+        return null;
     }
 
 
-    private static void SendToAllPlayers(Player[] players, String data)
+    private static void SendToAllPlayers(List<Player> players, String data)
     {
-        for (int i = 0; i < players.Length; i++)
+        
+        for (int i = 0; i < players.Count; i++)
         {
-            Send(players[i].handler(), data);
+            if (players[i].handler()==null)
+            {
+                Console.WriteLine("handler is null");
+            }
+            else
+            {
+                Send(players[i].handler(), data);
+            }
         }
     }
 
-    private static void SendToOtherPlayers(Socket handler, Player[] sendingTo, String data)
+    private static void SendToOtherPlayers(Socket handler, List<Player> sendingTo, String data)
     {
         //Player[] sending = games[numOfGames].playerHandlers();
-        for (int i = 0; i < sendingTo.Length; i++)
+        for (int i = 0; i < sendingTo.Count; i++)
         {
             if (sendingTo[i].handler() != handler)
             {
@@ -253,7 +305,7 @@ public class AsynchronousSocketListener
         // Begin sending the data to the remote device.
         handler.BeginSend(byteData, 0, byteData.Length, 0,
             new AsyncCallback(SendCallback), handler);
-        //Console.WriteLine("Sent " + data + "to client " + handler.AddressFamily);
+        Console.WriteLine("Sent " + data + " to client " + handler.AddressFamily);
     }
 
     private static void SendCallback(IAsyncResult ar)

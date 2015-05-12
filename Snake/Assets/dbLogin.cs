@@ -194,8 +194,11 @@ public class dbLogin : MonoBehaviour {
 				state.sb.Append(Encoding.ASCII.GetString(state.buffer,0,bytesRead));
 
 				response = state.sb.ToString();
-				Debug.Log(response);
+				Debug.Log("response before parsing: "+response);
+				Debug.Log ("<EOF> found in "+response+" is "+(response.IndexOf("<EOF")>-1).ToString());
+
 				if (response.IndexOf("<EOF") > -1) {
+					Debug.Log (response);
 					Debug.Log ("Response received: " + response.Substring(0, response.Length - 5));
 					if (response.Substring(0, 3) == "log") {
 						Debug.Log (username + " has logged in successfully.");
@@ -236,7 +239,9 @@ public class dbLogin : MonoBehaviour {
 						playerNum=2;
 						//Application.LoadLevel("Main");
 					}
+					state.sb = new StringBuilder();
 				}
+
 
 				StateObject newstate = new StateObject();
 				newstate.workSocket = client;

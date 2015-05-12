@@ -14,6 +14,7 @@ namespace Snake_Server
         public Player(Socket handler)
         {
             playerHandler = handler;
+            Console.WriteLine(playerHandler.LocalEndPoint);
         }
 
         public Socket handler()

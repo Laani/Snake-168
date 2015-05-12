@@ -9,38 +9,45 @@ namespace Snake_Server
 {
     public class Game
     {
-        public Player[] players = new Player[2]; //players is an array of 2 Player objects.
+        public List<Player> players= new List<Player>(); //players is an array of 2 Player objects.
         private int numOfPlayers = 0;
         bool started = false;
-        
+        List<String> playerNum = new List<String>() { "one<EOF>", "two<EOF>", "three<EOF>", "four<EOF>" };
+
+        public Game()
+        {
+
+        }
 
         public Game(Socket handler)
         {
-            players[numOfPlayers] = new Player(handler);
+            players.Add(new Player(handler));
             numOfPlayers++;
         }
 
-        public Player[] playerHandlers()
+        public List<Player> playerHandlers()
         {
             return players;
         }
 
-        public void addPlayer(Socket handler)
+        public String addPlayer(Socket handler)
         {
             if (this.isGameNotFull())
             {
-                players[numOfPlayers - 1] = new Player(handler);
+                players.Add(new Player(handler));
                 numOfPlayers++;
                 if (numOfPlayers == 2)
                 {
                     started = true;
                 }
+                return playerNum[numOfPlayers-1];
             }
+            return "";
         }
 
         public bool playerInThisGame(Socket handler)
         {
-            for (int i =0; i<players.Length;i++)
+            for (int i =0; i<players.Count;i++)
             {
                 if (players[i].handler() == handler)
                 {

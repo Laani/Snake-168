@@ -33,6 +33,8 @@ public class Snake : MonoBehaviour {
 	//Player score objects
 	public Text player1Score, player2Score;
 
+
+	private int playerNum;
 	//Direction for snake head
 	Vector2 dir;
 
@@ -45,8 +47,8 @@ public class Snake : MonoBehaviour {
 		}
 		InvokeRepeating("Move", 0.1f, 0.1f);  
 
-		//networkObject = GameObject.Find ("dblogin").GetComponent<dbLogin>();
-
+		networkObject = GameObject.Find ("dblogin").GetComponent<dbLogin>();
+		playerNum = networkObject.getPlayerNum ();
 
 	}
 
@@ -65,25 +67,28 @@ public class Snake : MonoBehaviour {
 		} else {
 			gameOver.SetActive(false);
 		}
-		if (this.name == "Player1") {
-			// Move in a new Direction?
-			if (Input.GetKey (KeyCode.D)) {
-				if (dir != -Vector2.right) {
-					dir = Vector2.right;
-				}
-			} else if (Input.GetKey (KeyCode.S)) {
-				if (dir != Vector2.up) {
-					dir = -Vector2.up;    // '-up' means 'down'
-				}
-			} else if (Input.GetKey (KeyCode.A)) {
-				if (dir != Vector2.right) {
-					dir = -Vector2.right; // '-right' means 'left'
-				}
-			} else if (Input.GetKey (KeyCode.W)) {
-				if (dir != -Vector2.up) {
-					dir = Vector2.up;
-				}
+
+		// Move in a new Direction?
+		if (Input.GetKey (KeyCode.D)) {
+			if (dir != -Vector2.right) {
+				dir = Vector2.right;
 			}
+		} else if (Input.GetKey (KeyCode.S)) {
+			if (dir != Vector2.up) {
+				dir = -Vector2.up;    // '-up' means 'down'
+			}
+		} else if (Input.GetKey (KeyCode.A)) {
+			if (dir != Vector2.right) {
+				dir = -Vector2.right; // '-right' means 'left'
+			}
+		} else if (Input.GetKey (KeyCode.W)) {
+			if (dir != -Vector2.up) {
+				dir = Vector2.up;
+			}
+		}
+
+		if (playerNum==1) {
+
 
 			//Set score for Player 1
 			dbLogin loginManager = GameObject.Find("dbLogin").GetComponent<dbLogin>();
@@ -92,35 +97,39 @@ public class Snake : MonoBehaviour {
 			player1Score.text = username + ": " + score;
 
 		} else if (this.name == "Player2") {
-			if (Input.GetKey (KeyCode.RightArrow)) {
-				if (dir != -Vector2.right) {
-					dir = Vector2.right;
-				}
-			} else if (Input.GetKey (KeyCode.DownArrow)) {
-				if (dir != Vector2.up) {
-					dir = -Vector2.up;    // '-up' means 'down'
-				}
-			} else if (Input.GetKey (KeyCode.LeftArrow)) {
-				if (dir != Vector2.right) {
-					dir = -Vector2.right; // '-right' means 'left'
-				}
-			} else if (Input.GetKey (KeyCode.UpArrow)) {
-				if (dir != -Vector2.up) {
-					dir = Vector2.up;
-				}
-			}
+//			if (Input.GetKey (KeyCode.RightArrow)) {
+//				if (dir != -Vector2.right) {
+//					dir = Vector2.right;
+//				}
+//			} else if (Input.GetKey (KeyCode.DownArrow)) {
+//				if (dir != Vector2.up) {
+//					dir = -Vector2.up;    // '-up' means 'down'
+//				}
+//			} else if (Input.GetKey (KeyCode.LeftArrow)) {
+//				if (dir != Vector2.right) {
+//					dir = -Vector2.right; // '-right' means 'left'
+//				}
+//			} else if (Input.GetKey (KeyCode.UpArrow)) {
+//				if (dir != -Vector2.up) {
+//					dir = Vector2.up;
+//				}
+//			}
 			//Set score for player 2
-			player2Score.text = "Player 2: " + score;
+			dbLogin loginManager = GameObject.Find("dbLogin").GetComponent<dbLogin>();
+			string username = loginManager.getUser ();
+			
+			player2Score.text = username + ": " + score;
+			//player2Score.text = "Player 2: " + score;
 			
 		}
 
 
 	}
 
-	string HeadData()
+	/*string HeadData()
 	{
 
-	}
+	}*/
 
 
 	void Move() {

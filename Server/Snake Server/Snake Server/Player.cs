@@ -11,12 +11,18 @@ namespace Snake_Server
         bool dead = false;
         public Socket playerHandler;
         List<String> messageQueue=new List<String>();
+        int playerNum;
 
-
-        public Player(Socket handler)
+        public Player(Socket handler,int num)
         {
             playerHandler = handler;
+            playerNum = num;
             Console.WriteLine(playerHandler.LocalEndPoint);
+        }
+
+        public int getPlayerNum()
+        {
+            return playerNum;
         }
 
         public Socket handler()

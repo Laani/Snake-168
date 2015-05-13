@@ -34,6 +34,7 @@ public class AsynchronousSocketListener
     public static String[] playerNum = new String[2] { "one", "two" };
 
     private static bool loggedInSuccessfully = false;
+    private static int heartbeat = 100;
 
     static int times = 0;
     public AsynchronousSocketListener()
@@ -222,27 +223,59 @@ public class AsynchronousSocketListener
                     {
                         if (games[i].playerInThisGame(handler))
                         {
-                            Send(handler,games[i].getNextMessage(handler));
+                            String message = games[i].getNextMessage(handler);
+                            if (message != "")
+                            {
+                                Send(handler, message);
+                            }
                         }
                     }
                 }
                 else if (content.Substring(0, 4) == "head")
                 {
                     String head = content.Substring(5, content.Length - 10);
-                    List<Player> allPlayerInGame = findGameWithHandler(handler);
-                    if (allPlayerInGame.Count != 0)
+                    Game thisGame=null;
+                    for (int i = 0; i < games.Count; i++)
                     {
-                        SendToOtherPlayers(handler, allPlayerInGame, "hea " + head + "<EOF>");
+                        for (int m = 0; m < games[i].players.Count; m++)
+                        {
+                            if (games[i].players[m].handler() == handler)
+                            {
+                                thisGame = games[i];
+                            }
+                        }
                     }
+
+
+                     if (thisGame != null)
+                     {
+                        sendLocation(thisGame, handler, head,"head");
+                        //SendToOtherPlayers(handler, allPlayerInGame, head + "<EOF>"); //#locationsending
+                     }
+                    
                 }
                 else if (content.Substring(0, 4) == "tail")
                 {
                     String tail = content.Substring(5, content.Length - 10);
-                    List<Player> allPlayerInGame = findGameWithHandler(handler);
-                    if (allPlayerInGame.Count != 0)
+                    Game thisGame=null;
+                    for (int i = 0; i < games.Count; i++)
                     {
-                        SendToOtherPlayers(handler, allPlayerInGame, "tai " + tail + "<EOF>");
+                        for (int m = 0; m < games[i].players.Count; m++)
+                        {
+                            if (games[i].players[m].handler() == handler)
+                            {
+                                thisGame = games[i];
+                            }
+                        }
                     }
+
+
+                     if (thisGame != null)
+                     {
+                        sendLocation(thisGame, handler, tail ,"tail");
+                        //SendToOtherPlayers(handler, allPlayerInGame, head + "<EOF>"); //#locationsending
+                     }
+                    
                 }
                 else if (content.Substring(0,4)=="quit")
                 {
@@ -275,9 +308,47 @@ public class AsynchronousSocketListener
                 // Not all data received. Get more.
                // handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
                // new AsyncCallback(ReadCallback), state);
+                
+
             }
         }
     }
+
+  ////  private static Game findGameWithHandler(Socket handler)
+  //  {
+  //      for (int i =0; i<games.Count;i++)
+  //      {
+  //          for (int m =0; m<games[i].players.Count;m++)
+  //          {
+  //              if (games[i].players[m].handler() == handler)
+  //              {
+  //                  return games[i];
+  //              }
+  //          }
+  //      }
+
+  //  }
+
+    private static void sendLocation(Game game,Socket handler,String data,String type)
+    {
+        String header="";
+        if (type=="head")
+        {
+            header = "h";
+        }
+        else if (type =="tail")
+        {
+            header = "t";
+        }
+        for (int i = 0; i < game.players.Count; i++)
+        {
+            if (game.players[i].handler() != handler)
+            {
+                game.players[i].addMessage("p"+(i+1).ToString()+header+" "+data+"<EOF>"); 
+            }
+        }
+    }
+
 
     private static void addMessageToAllPlayers(Game game, String data)
     {

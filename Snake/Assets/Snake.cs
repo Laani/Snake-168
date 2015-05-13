@@ -47,6 +47,9 @@ public class Snake : MonoBehaviour {
 		}
 		InvokeRepeating("Move", 0.1f, 0.1f);  
 
+		networkObject = GameObject.Find ("dblogin").GetComponent<dbLogin>();
+		playerNum = networkObject.getPlayerNum ();
+
 	}
 
 
@@ -93,7 +96,7 @@ public class Snake : MonoBehaviour {
 
 			player1Score.text = username + ": " + score;
 
-		} else if (dbLogin.playerNum==2) {
+		} else if (dbLogin.playerNum == "Player2") {
 //			if (Input.GetKey (KeyCode.RightArrow)) {
 //				if (dir != -Vector2.right) {
 //					dir = Vector2.right;
@@ -112,12 +115,38 @@ public class Snake : MonoBehaviour {
 //				}
 //			}
 			//Set score for player 2
-			dbLogin loginManager = GameObject.Find("dbLogin").GetComponent<dbLogin>();
-			string username = loginManager.getUser ();
+
+			// Temporary null out, re comment in later - William
+			//dbLogin loginManager = GameObject.Find("dbLogin").GetComponent<dbLogin>();
+			//string username = loginManager.getUser ();
 			
-			player2Score.text = username + ": " + score;
-			//player2Score.text = "Player 2: " + score;
+			//player2Score.text = username + ": " + score;
+
+			//player2Score.text = "Player 2: " + score; // Old code don't think we need - William
 			
+		}
+		/* 
+			Adding Scene Check Code
+
+		*/
+		
+		if(Application.loadedLevelName == "Main")
+		{
+
+
+			GameObject player1Obj = GameObject.Find("Player1");
+			//Debug.Log(player1Obj.transform.position.x);
+			//Debug.Log(player1Obj.transform.position.x.getType());
+			float player1ObjX = player1Obj.transform.position.x;
+			float player1ObjY = player1Obj.transform.position.y;
+			//Debug.Log("Player1ObjX, Y: (" + player1ObjX + "," + player1ObjY +")");
+
+			List<float> player1Location = new List<float>();
+			player1Location.Add(player1ObjX);
+			player1Location.Add(player1ObjY);
+			Debug.Log("Player1 X,Y: " + player1Location[0] + " " + player1Location[1]);
+
+
 		}
 
 

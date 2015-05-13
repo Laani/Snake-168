@@ -37,7 +37,7 @@ public class Snake : MonoBehaviour {
 	private int playerNum;
 	//Direction for snake head
 	Vector2 dir;
-
+	GameObject playerObj=null;
 	// Use this for initialization
 	void Start () {
 		if (this.name == "Player1") {
@@ -47,8 +47,17 @@ public class Snake : MonoBehaviour {
 		}
 		InvokeRepeating("Move", 0.1f, 0.1f);  
 
-		networkObject = GameObject.Find ("dblogin").GetComponent<dbLogin>();
+		networkObject = GameObject.Find ("dbLogin").GetComponent<dbLogin>();
 		playerNum = networkObject.getPlayerNum ();
+
+
+		if (dbLogin.playerNum == 1){
+			playerObj = GameObject.Find("Player1");
+		}
+		else if (dbLogin.playerNum==2)
+		{
+			playerObj = GameObject.Find("Player2");
+		}
 
 	}
 
@@ -134,22 +143,35 @@ public class Snake : MonoBehaviour {
 		{
 
 
-			GameObject player1Obj = GameObject.Find("Player1");
-			float player1ObjX = player1Obj.transform.position.x;
-			float player1ObjY = player1Obj.transform.position.y;
-			//Debug.Log("Player1ObjX, Y: (" + player1ObjX + "," + player1ObjY +")");
+//			GameObject player1Obj = GameObject.Find("Player1");
+//			float player1ObjX = player1Obj.transform.position.x;
+//			float player1ObjY = player1Obj.transform.position.y;
+//			//Debug.Log("Player1ObjX, Y: (" + player1ObjX + "," + player1ObjY +")");
+//
+//			List<float> player1Location = new List<float>();
+//			player1Location.Add(player1ObjX);
+//			player1Location.Add(player1ObjY);
+//			string player1LocationString = "head "+player1Location[0].ToString()+","+player1Location[1].ToString()+"<EOF>";
+//			Debug.Log(player1LocationString);
+//			//Debug.Log("Player1 X,Y: " + player1Location[0] + " " + player1Location[1]);
+//			dbLogin loginManager = GameObject.Find("dbLogin").GetComponent<dbLogin>();
+//			loginManager.SendToServer(player1LocationString);
 
-			List<float> player1Location = new List<float>();
-			player1Location.Add(player1ObjX);
-			player1Location.Add(player1ObjY);
-			string player1LocationString = "head "+player1Location[0].ToString()+","+player1Location[1].ToString()+"<EOF>";
-			Debug.Log(player1LocationString);
-			//Debug.Log("Player1 X,Y: " + player1Location[0] + " " + player1Location[1]);
-			dbLogin loginManager = GameObject.Find("dbLogin").GetComponent<dbLogin>();
-			loginManager.SendToServer(player1LocationString);
 
-
-
+			if (playerObj!=null){
+				float playerObjX = playerObj.transform.position.x;
+				float playerObjY = playerObj.transform.position.y;
+				//Debug.Log("Player1ObjX, Y: (" + player1ObjX + "," + player1ObjY +")");
+				
+				List<float> playerLocation = new List<float>();
+				playerLocation.Add(playerObjX);
+				playerLocation.Add(playerObjY);
+				string playerLocationString = "head "+playerLocation[0].ToString()+","+playerLocation[1].ToString()+"<EOF>";
+				Debug.Log(playerLocationString);
+				//Debug.Log("Player1 X,Y: " + player1Location[0] + " " + player1Location[1]);
+				dbLogin loginManager = GameObject.Find("dbLogin").GetComponent<dbLogin>();
+				loginManager.SendToServer(playerLocationString);
+			}
 
 
 		}

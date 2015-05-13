@@ -20,7 +20,7 @@ public class Manager : MonoBehaviour {
 				gameOver = GameObject.Find ("Over");
 				
 				gameOver.SetActive (false);
-                Time.timeScale=0;
+//                Time.timeScale=0;
 				
 				
 
@@ -29,11 +29,11 @@ public class Manager : MonoBehaviour {
         void Update ()
         {
                 // When not playing, check if the X key is being pressed.
-                if (IsPlaying () == false && Input.GetKeyDown (KeyCode.Space)) {
-                        GameStart ();
-                        Time.timeScale=1;
-
-                }
+//                if (IsPlaying () == false && Input.GetKeyDown (KeyCode.Space)) {
+//                        GameStart ();
+//                        Time.timeScale=1;
+//
+//                }
 				
         }
 		

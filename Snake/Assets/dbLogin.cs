@@ -153,6 +153,7 @@ public class dbLogin : MonoBehaviour {
 		if ((gameStarted)&& (Application.loadedLevel!=2)) {
 			Application.LoadLevelAsync(2);
 		}
+
 		/*if (!responseRead) {
 			Debug.Log ("Response received: " + response);
 			responseRead = true;
@@ -262,10 +263,10 @@ public class dbLogin : MonoBehaviour {
 						Debug.Log(response);
 
 						//Snake snakeManager = GameObject.Find("Snake").GetComponent<Snake>();
-						GameObject player1Obj = GameObject.Find("Player1");
-
-						float player1ObjX = player1Obj.transform.position.x;
-						float player1ObjY = player1Obj.transform.position.y;
+//						GameObject player1Obj = GameObject.Find("Player1");
+//
+//						float player1ObjX = player1Obj.transform.position.x;
+//						float player1ObjY = player1Obj.transform.position.y;
 
 
 					}else if (response.Substring(0, 3) == "p2h")

@@ -171,10 +171,11 @@ public class AsynchronousSocketListener
                                 {
                                     games[i].addPlayer(handler);
                                     addedPlayer = true;
-                                    //if (games[i].isGameFull())
-                                    //{
-                                    //   SendToAllPlayers(games[i].playerHandlers(), "sta<EOF>");
-                                    //}
+                                    if (games[i].isGameFull())
+                                    {
+                                       addMessageToAllPlayers(games[i], "sta<EOF>");
+                                       SendToAllPlayers(games[i].players, "sta<EOF>");
+                                    }
                                 }
                             }
 
@@ -274,6 +275,14 @@ public class AsynchronousSocketListener
                // handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
                // new AsyncCallback(ReadCallback), state);
             }
+        }
+    }
+
+    private static void addMessageToAllPlayers(Game game, String data)
+    {
+        for (int i =0; i < game.players.Count;i++)
+        {
+            game.players[i].addMessage(data);
         }
     }
 

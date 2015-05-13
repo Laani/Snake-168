@@ -10,12 +10,13 @@ using UnityEngine.UI;
 public class dbLogin : MonoBehaviour {
 	
 	public static string username;
+	public static string server;
 	public static int playerNum;
 
 	private Socket client;
 
 	private static bool stopped = false;
-	private static bool startGame = false;
+	private static bool gameStarted = false;
 	private const int port = 11000;
 	private static ManualResetEvent connectDone;
 	private static String response;
@@ -78,6 +79,10 @@ public class dbLogin : MonoBehaviour {
 		connectDone = 
 			new ManualResetEvent(false);
 		response = String.Empty;
+		GameObject serverGO = GameObject.Find ("Server");
+		InputField serverIF = serverGO.GetComponent<InputField> ();
+		serverIF.text = "127.0.0.1";
+		
 		// private static bool responseRead = true;
 	}
 	
@@ -88,7 +93,11 @@ public class dbLogin : MonoBehaviour {
 				// Establish the remote endpoint for the socket.
 				// The name of the 
 				// remote device is "host.contoso.com".
-				IPHostEntry ipHostInfo = Dns.GetHostEntry ("127.0.0.1");
+				GameObject serverGO = GameObject.Find ("Server");
+				InputField serverIF = serverGO.GetComponent<InputField> ();
+				server = serverIF.text;
+
+				IPHostEntry ipHostInfo = Dns.GetHostEntry (server);
 				IPAddress ipAddress = ipHostInfo.AddressList [0];
 				IPEndPoint remoteEP = new IPEndPoint (ipAddress, port);
 			
@@ -140,6 +149,9 @@ public class dbLogin : MonoBehaviour {
 			Debug.Log("opening load page");
 			Application.LoadLevelAsync(4);
 			stopped = false;
+		}
+		if ((gameStarted)&& (Application.loadedLevel==2)) {
+			Application.LoadLevelAsync(2);
 		}
 		/*if (!responseRead) {
 			Debug.Log ("Response received: " + response);
@@ -231,7 +243,7 @@ public class dbLogin : MonoBehaviour {
 					}
 					else if (response.Substring(0,3) == "sta")
 					{
-						startGame = true;
+						gameStarted = true;
 						//Application.LoadLevel("Main");
 					}else if (response.Substring(0,3) == "one")
 					{

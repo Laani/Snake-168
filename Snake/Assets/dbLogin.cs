@@ -260,8 +260,10 @@ public class dbLogin : MonoBehaviour {
 					{
 						Debug.Log ("p1h read");
 						Debug.Log(response);
-						Snake snakeManager = GameObject.Find("Snake").GetComponent<Snake>();
+
+						//Snake snakeManager = GameObject.Find("Snake").GetComponent<Snake>();
 						GameObject player1Obj = GameObject.Find("Player1");
+
 						float player1ObjX = player1Obj.transform.position.x;
 						float player1ObjY = player1Obj.transform.position.y;
 
@@ -269,7 +271,7 @@ public class dbLogin : MonoBehaviour {
 					}else if (response.Substring(0, 3) == "p2h")
 					{
 						Debug.Log ("p2h read");
-						Snake snakeManager = GameObject.Find("Snake").GetComponent<Snake>();
+						//Snake snakeManager = GameObject.Find("Snake").GetComponent<Snake>();
 					}
 					//state.sb = new StringBuilder(); // Victor told me to  comment this out - William
 				}

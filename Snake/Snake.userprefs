@@ -2,8 +2,8 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Snake.cs">
     <Files>
-      <File FileName="Assets\dbLogin.cs" Line="153" Column="48" />
-      <File FileName="Assets\Snake.cs" Line="96" Column="34" />
+      <File FileName="Assets\dbLogin.cs" Line="275" Column="7" />
+      <File FileName="Assets\Snake.cs" Line="153" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

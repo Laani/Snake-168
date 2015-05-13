@@ -149,6 +149,9 @@ public class Snake : MonoBehaviour {
 			loginManager.SendToServer(player1LocationString);
 
 
+
+
+
 		}
 
 

@@ -193,25 +193,7 @@ public class AsynchronousSocketListener
                             }
                         }
                         
-                        
-
-
-
-
-                        //else if (games[numOfGames].isGameNotFull()) //if the current game isn't full, then add player
-                        //{
-                        //    games[numOfGames].addPlayer(handler);
-                        //    Send(handler, "two<EOF>");
-                        //}
-                        //if (games[numOfGames].isGameFull()) //if game is full, send a start message to all players of the current game, move index up by one
-                        //{
-                        //    List<Player> sending = games[numOfGames].playerHandlers();
-                        //    Console.WriteLine("sending has " + sending.Count + " items");
-                        //    Console.WriteLine(sending[0].playerHandler);
-                        //    Console.WriteLine(sending[1].playerHandler);
-                        //    SendToAllPlayers(sending, "sta<EOF>");
-                        //    numOfGames++;
-                        //}
+                       
                         loggedInSuccessfully = false;
                         addedPlayer = false;
                     }
@@ -325,20 +307,6 @@ public class AsynchronousSocketListener
         }
     }
 
-  ////  private static Game findGameWithHandler(Socket handler)
-  //  {
-  //      for (int i =0; i<games.Count;i++)
-  //      {
-  //          for (int m =0; m<games[i].players.Count;m++)
-  //          {
-  //              if (games[i].players[m].handler() == handler)
-  //              {
-  //                  return games[i];
-  //              }
-  //          }
-  //      }
-
-  //  }
 
     private static void sendLocation(Game game,Socket handler,String data,String type)
     {
@@ -355,8 +323,10 @@ public class AsynchronousSocketListener
         {
             if (game.players[i].handler() != handler)
             {
+                String message = "p" + (i + 1).ToString() + header + " " + data + "<EOF>";
                 Console.WriteLine("p" + (i + 1).ToString() + header + " " + data + "<EOF>");
-                game.players[i].addMessage("p"+(i+1).ToString()+header+" "+data+"<EOF>"); 
+                Send(game.players[i].handler(), message);
+                //game.players[i].addMessage("p"+(i+1).ToString()+header+" "+data+"<EOF>"); 
             }
         }
     }

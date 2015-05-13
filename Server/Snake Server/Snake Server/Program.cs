@@ -152,6 +152,7 @@ public class AsynchronousSocketListener
                  
                     DbLogin(username, password, handler);
                     bool addedPlayer = false;
+                    
                     if (loggedInSuccessfully)
                     {
                         if ((games.Count==0)&& (addedPlayer==false)) //if no games are initialized
@@ -173,7 +174,7 @@ public class AsynchronousSocketListener
                                     addedPlayer = true;
                                     if (games[i].isGameFull())
                                     {
-                                       addMessageToAllPlayers(games[i], "sta<EOF>");
+                                       //addMessageToAllPlayers(games[i], "sta<EOF>");
                                        SendToAllPlayers(games[i].players, "sta<EOF>");
                                     }
                                 }

@@ -150,7 +150,7 @@ public class dbLogin : MonoBehaviour {
 			Application.LoadLevelAsync(4);
 			stopped = false;
 		}
-		if ((gameStarted)&& (Application.loadedLevel==2)) {
+		if ((gameStarted)&& (Application.loadedLevel!=2)) {
 			Application.LoadLevelAsync(2);
 		}
 		/*if (!responseRead) {
@@ -244,6 +244,7 @@ public class dbLogin : MonoBehaviour {
 					else if (response.Substring(0,3) == "sta")
 					{
 						gameStarted = true;
+						Send (client, "ackn<EOF>");
 						//Application.LoadLevel("Main");
 					}else if (response.Substring(0,3) == "one")
 					{

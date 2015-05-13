@@ -47,9 +47,6 @@ public class Snake : MonoBehaviour {
 		}
 		InvokeRepeating("Move", 0.1f, 0.1f);  
 
-		networkObject = GameObject.Find ("dblogin").GetComponent<dbLogin>();
-		playerNum = networkObject.getPlayerNum ();
-
 	}
 
 
@@ -87,7 +84,7 @@ public class Snake : MonoBehaviour {
 			}
 		}
 
-		if (playerNum==1) {
+		if (dbLogin.playerNum==1) {
 
 
 			//Set score for Player 1
@@ -96,7 +93,7 @@ public class Snake : MonoBehaviour {
 
 			player1Score.text = username + ": " + score;
 
-		} else if (this.name == "Player2") {
+		} else if (dbLogin.playerNum==2) {
 //			if (Input.GetKey (KeyCode.RightArrow)) {
 //				if (dir != -Vector2.right) {
 //					dir = Vector2.right;

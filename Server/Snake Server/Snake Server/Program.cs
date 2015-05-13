@@ -158,7 +158,7 @@ public class AsynchronousSocketListener
                     {
                         if ((games.Count==0)&& (addedPlayer==false)) //if no games are initialized
                         {
-                            games.Add(new Game(handler));
+                            games.Add(new Game(handler,username));
                             times++;
                             Console.WriteLine(times.ToString());
                             addedPlayer = true;
@@ -171,12 +171,21 @@ public class AsynchronousSocketListener
                             {
                                 if (games[i].isGameNotFull())
                                 {
-                                    games[i].addPlayer(handler);
+                                    games[i].addPlayer(handler,username);
                                     addedPlayer = true;
                                     if (games[i].isGameFull())
                                     {
                                        //addMessageToAllPlayers(games[i], "sta<EOF>");
                                        SendToAllPlayers(games[i].players, "sta<EOF>");
+                                       for (int j = 0; j < games[i].players.Count; j++)
+                                       {
+                                           if (games[i].players[j].handler() != handler)
+                                           {
+                                               String message = "opp " + games[i].players[j].getPlayerName() + "<EOF>";
+                                               Console.WriteLine(message);
+                                               Send(games[i].players[i].handler(), message);
+                                           }
+                                       }
                                     }
                                 }
                             }
@@ -184,7 +193,7 @@ public class AsynchronousSocketListener
                             /*if there are no empty/nonfull games, create a new one for this player*/
                             if (addedPlayer == false)
                             {
-                                games.Add(new Game(handler));
+                                games.Add(new Game(handler,username));
 
                                 times++;
                                 Console.WriteLine(times.ToString());
@@ -258,6 +267,44 @@ public class AsynchronousSocketListener
                         //SendToOtherPlayers(handler, allPlayerInGame, head + "<EOF>"); //#locationsending
                      }
                     
+                }
+                else if (content.Substring(0, 4) == "1sco")
+                {
+                    Game thisGame = null;
+                    for (int i = 0; i < games.Count; i++)
+                    {
+                        for (int m = 0; m < games[i].players.Count; m++)
+                        {
+                            if (games[i].players[m].handler() == handler)
+                            {
+                                thisGame = games[i];
+                            }
+                        }
+                    }
+
+                    if (thisGame != null)
+                    {
+                        thisGame.players[0].addScore();
+                    }
+                }
+                else if (content.Substring(0, 4) == "2sco")
+                {
+                    Game thisGame = null;
+                    for (int i = 0; i < games.Count; i++)
+                    {
+                        for (int m = 0; m < games[i].players.Count; m++)
+                        {
+                            if (games[i].players[m].handler() == handler)
+                            {
+                                thisGame = games[i];
+                            }
+                        }
+                    }
+
+                    if (thisGame != null)
+                    {
+                        thisGame.players[1].addScore();
+                    }
                 }
                 else if (content.Substring(0,4)=="quit")
                 {

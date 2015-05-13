@@ -12,6 +12,10 @@ public class dbLogin : MonoBehaviour {
 	public static string username;
 	public static string server;
 	public static int playerNum;
+	public static string p1Pos;
+	public static string p2Pos;
+	public static string opponent;
+	public static int oscore=0;
 
 	private Socket client;
 
@@ -28,6 +32,32 @@ public class dbLogin : MonoBehaviour {
 
 	public int getPlayerNum(){
 		return playerNum;
+	}
+
+	public string getOpponent() {
+		return opponent;
+	}
+
+	public int getOscore() {
+		return oscore;
+	}
+
+	public float getPos1(string type) {
+		string x = p1Pos.Substring (p1Pos.IndexOf (' ') + 1, p1Pos.IndexOf(',') - (p1Pos.IndexOf(' ') + 1));
+		string y = p1Pos.Substring(p1Pos.IndexOf (',') + 1, p1Pos.IndexOf('<') - (p1Pos.IndexOf(',') + 1));
+		if (type == "x") {
+			return float.Parse (x);
+		} else
+			return float.Parse (y);
+	}
+
+	public float getPos2(string type) {
+		string x = p2Pos.Substring (p2Pos.IndexOf (' ') + 1, p2Pos.IndexOf(',') - (p2Pos.IndexOf(' ') + 1));
+		string y = p2Pos.Substring(p2Pos.IndexOf (',') + 1, p2Pos.IndexOf('<') - (p2Pos.IndexOf(',') + 1));
+		if (type == "x") {
+			return float.Parse (x);
+		} else
+			return float.Parse (y);
 	}
 
 	public void SendToServer(String data)
@@ -208,9 +238,9 @@ public class dbLogin : MonoBehaviour {
 
 				response = state.sb.ToString();
 				Debug.Log("response before parsing: "+response);
-				Debug.Log ("<EOF> found in "+response+" is "+(response.IndexOf("<EOF")>-1).ToString());
+				Debug.Log ("<EOF> found in "+response+" is "+(response.IndexOf("<EOF>")>-1).ToString());
 
-				if (response.IndexOf("<EOF") > -1) 
+				if (response.IndexOf("<EOF>") > -1) 
 				{
 					Debug.Log (response);
 					Debug.Log ("Response received: " + response.Substring(0, response.Length - 5));
@@ -261,6 +291,7 @@ public class dbLogin : MonoBehaviour {
 					{
 						Debug.Log ("p1h read");
 						Debug.Log(response);
+						p1Pos = response.Substring (4, response.Length - 9);
 
 						//Snake snakeManager = GameObject.Find("Snake").GetComponent<Snake>();
 //						GameObject player1Obj = GameObject.Find("Player1");
@@ -272,7 +303,14 @@ public class dbLogin : MonoBehaviour {
 					}else if (response.Substring(0, 3) == "p2h")
 					{
 						Debug.Log ("p2h read");
+						p2Pos = response.Substring (4, response.Length - 9);
 						//Snake snakeManager = GameObject.Find("Snake").GetComponent<Snake>();
+					} else if (response.Substring(0, 3) == "opp") {
+						opponent = response.Substring(4, response.Length - 9);
+						Debug.Log ("opponent's name received: " + opponent);
+					} else if (response.Substring(0, 3) == "sco") {
+						oscore = int.Parse(response.Substring (4, response.Length - 9));
+						Debug.Log ("opponent's score: " + oscore);
 					}
 					//state.sb = new StringBuilder(); // Victor told me to  comment this out - William
 				}

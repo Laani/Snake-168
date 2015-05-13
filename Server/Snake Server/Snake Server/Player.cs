@@ -12,17 +12,26 @@ namespace Snake_Server
         public Socket playerHandler;
         List<String> messageQueue=new List<String>();
         int playerNum;
+        string playerName;
+        int score;
 
-        public Player(Socket handler,int num)
+        public Player(Socket handler,int num,string name)
         {
             playerHandler = handler;
             playerNum = num;
+            playerName = name;
+            score = 0;
             Console.WriteLine(playerHandler.LocalEndPoint);
         }
 
         public int getPlayerNum()
         {
             return playerNum;
+        }
+
+        public string getPlayerName()
+        {
+            return playerName;
         }
 
         public Socket handler()
@@ -36,7 +45,6 @@ namespace Snake_Server
         }
         public void addMessage(String data)
         {
-            
             messageQueue.Add(data);
         }
         public String popMessage()
@@ -49,6 +57,10 @@ namespace Snake_Server
                 return message;
             }
             return "";
+        }
+        public void addScore()
+        {
+            score++;
         }
     }
 }

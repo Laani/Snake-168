@@ -19,9 +19,9 @@ namespace Snake_Server
 
         }
 
-        public Game(Socket handler)
+        public Game(Socket handler, string name)
         {
-            players.Add(new Player(handler,numOfPlayers));
+            players.Add(new Player(handler, numOfPlayers, name));
             players[numOfPlayers].addMessage("one<EOF>");
             numOfPlayers++;
         }
@@ -60,11 +60,11 @@ namespace Snake_Server
         }
 
 
-        public void addPlayer(Socket handler)
+        public void addPlayer(Socket handler, string name)
         {
             if (this.isGameNotFull())
             {
-                players.Add(new Player(handler,numOfPlayers));
+                players.Add(new Player(handler,numOfPlayers,name));
                 players[numOfPlayers].addMessage(playerNum[numOfPlayers]);
                 numOfPlayers++;
 

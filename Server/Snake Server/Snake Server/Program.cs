@@ -308,9 +308,20 @@ public class AsynchronousSocketListener
                 // Not all data received. Get more.
                // handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
                // new AsyncCallback(ReadCallback), state);
-                
+                if (heartbeat==0)
+                {
+                    heartbeat = 100;
+                    for (int i =0; i<games.Count;i++)
+                    {
+                        for (int m =0; m<games[i].players.Count;m++)
+                        {
+                            Send(games[i].players[m].handler(), "hear");
+                        }
+                    }
+                }
 
             }
+            heartbeat--;
         }
     }
 

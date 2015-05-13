@@ -22,6 +22,7 @@ namespace Snake_Server
         public Game(Socket handler)
         {
             players.Add(new Player(handler));
+            players[numOfPlayers].addMessage("one<EOF>");
             numOfPlayers++;
         }
 
@@ -30,19 +31,48 @@ namespace Snake_Server
             return players;
         }
 
-        public String addPlayer(Socket handler)
+        //public String addPlayer(Socket handler)
+        //{
+        //    if (this.isGameNotFull())
+        //    {
+        //        players.Add(new Player(handler));
+        //        players[numOfPlayers].addMessage(playerNum[numOfPlayers]);
+        //        numOfPlayers++;
+                
+        //        if (numOfPlayers == 2)
+        //        {
+        //            started = true;
+        //        }
+        //        return playerNum[numOfPlayers-1];
+        //    }
+        //    return "";
+        //}
+        public String getNextMessage(Socket handler)
+        {
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (players[i].handler() == handler)
+                {
+                    return players[i].popMessage();
+                }
+            }
+            return "";
+        }
+
+
+        public void addPlayer(Socket handler)
         {
             if (this.isGameNotFull())
             {
                 players.Add(new Player(handler));
+                players[numOfPlayers].addMessage(playerNum[numOfPlayers]);
                 numOfPlayers++;
+
                 if (numOfPlayers == 2)
                 {
                     started = true;
                 }
-                return playerNum[numOfPlayers-1];
             }
-            return "";
         }
 
         public bool playerInThisGame(Socket handler)
@@ -55,6 +85,19 @@ namespace Snake_Server
                 }
             }
             return false;
+        }
+
+        public List<Player> getOtherPlayers(Socket handler)
+        {
+            List<Player> otherPlayers = new List<Player>();
+            for (int i =0; i<players.Count;i++)
+            {
+                if (players[i].handler()!=handler)
+                {
+                    otherPlayers.Add(players[i]);
+                }
+            }
+            return otherPlayers;
         }
 
         public int totalPlayers()

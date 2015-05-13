@@ -10,6 +10,8 @@ namespace Snake_Server
     {
         bool dead = false;
         public Socket playerHandler;
+        List<String> messageQueue=new List<String>();
+
 
         public Player(Socket handler)
         {
@@ -25,6 +27,19 @@ namespace Snake_Server
         public bool isDead()
         {
             return dead;
+        }
+        public void addMessage(String data)
+        {
+            messageQueue.Add(data);
+        }
+        public String popMessage()
+        {
+            if (messageQueue.Count>0){
+                String message = messageQueue[0];
+                messageQueue.Remove(message);
+                return message;
+            }
+            return "";
         }
     }
 }

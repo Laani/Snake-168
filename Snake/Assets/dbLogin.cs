@@ -88,7 +88,7 @@ public class dbLogin : MonoBehaviour {
 				// Establish the remote endpoint for the socket.
 				// The name of the 
 				// remote device is "host.contoso.com".
-				IPHostEntry ipHostInfo = Dns.GetHostEntry (Dns.GetHostName ());
+				IPHostEntry ipHostInfo = Dns.GetHostEntry ("127.0.0.1");
 				IPAddress ipAddress = ipHostInfo.AddressList [0];
 				IPEndPoint remoteEP = new IPEndPoint (ipAddress, port);
 			
@@ -197,11 +197,15 @@ public class dbLogin : MonoBehaviour {
 				Debug.Log("response before parsing: "+response);
 				Debug.Log ("<EOF> found in "+response+" is "+(response.IndexOf("<EOF")>-1).ToString());
 
-				if (response.IndexOf("<EOF") > -1) {
+				if (response.IndexOf("<EOF") > -1) 
+				{
 					Debug.Log (response);
 					Debug.Log ("Response received: " + response.Substring(0, response.Length - 5));
-					if (response.Substring(0, 3) == "log") {
+					if (response.Substring(0, 3) == "log") 
+					{
 						Debug.Log (username + " has logged in successfully.");
+						Send (client, "ackn<EOF>");
+						Debug.Log ("Sent ackn to server.");
 						/*try {
 							client.Shutdown(SocketShutdown.Both);
 						}
@@ -210,6 +214,7 @@ public class dbLogin : MonoBehaviour {
 						}
 						client.Close(); */
 						stopped = true;
+
 
 					} else if (response.Substring (0,3) == "wro") {
 						Debug.Log("You have entered the wrong password for " + username + ". Please try again.");
@@ -284,4 +289,9 @@ public class dbLogin : MonoBehaviour {
 			Debug.Log(e.ToString());
 		}
 	}
+
+	void OnApplicationQuit(){
+		Send (client, "quit<EOF>");
+	}
+
 }

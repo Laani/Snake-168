@@ -157,7 +157,6 @@ public class AsynchronousSocketListener
                         if ((games.Count==0)&& (addedPlayer==false)) //if no games are initialized
                         {
                             games.Add(new Game(handler));
-                            Send(handler, "one<EOF>");
                             times++;
                             Console.WriteLine(times.ToString());
                             addedPlayer = true;
@@ -170,13 +169,12 @@ public class AsynchronousSocketListener
                             {
                                 if (games[i].isGameNotFull())
                                 {
-                                    String sendPlayerNumber = games[i].addPlayer(handler);
-                                    Send(handler, sendPlayerNumber);
+                                    games[i].addPlayer(handler);
                                     addedPlayer = true;
-                                    if (games[i].isGameFull())
-                                    {
-                                        SendToAllPlayers(games[i].playerHandlers(), "sta<EOF>");
-                                    }
+                                    //if (games[i].isGameFull())
+                                    //{
+                                    //   SendToAllPlayers(games[i].playerHandlers(), "sta<EOF>");
+                                    //}
                                 }
                             }
 
@@ -184,7 +182,6 @@ public class AsynchronousSocketListener
                             if (addedPlayer == false)
                             {
                                 games.Add(new Game(handler));
-                                Send(handler, "one<EOF>");
 
                                 times++;
                                 Console.WriteLine(times.ToString());
@@ -192,6 +189,7 @@ public class AsynchronousSocketListener
                                 addedPlayer = true;
                             }
                         }
+                        
                         
 
 
@@ -215,6 +213,17 @@ public class AsynchronousSocketListener
                         addedPlayer = false;
                     }
                 }
+                else if (content.Substring(0,4)=="ackn")
+                {
+                    Console.WriteLine("ackn received");
+                    for (int i =0;i<games.Count;i++)
+                    {
+                        if (games[i].playerInThisGame(handler))
+                        {
+                            Send(handler,games[i].getNextMessage(handler));
+                        }
+                    }
+                }
                 else if (content.Substring(0, 4) == "head")
                 {
                     String head = content.Substring(5, content.Length - 10);
@@ -231,6 +240,20 @@ public class AsynchronousSocketListener
                     if (allPlayerInGame.Count != 0)
                     {
                         SendToOtherPlayers(handler, allPlayerInGame, "tai " + tail + "<EOF>");
+                    }
+                }
+                else if (content.Substring(0,4)=="quit")
+                {
+                    for (int i = 0; i < games.Count; i++)
+                    {
+                        if (games[i].playerInThisGame(handler))
+                        {
+                            List<Player> otherPlayers = games[i].getOtherPlayers(handler);
+                            for (int m =0;m<otherPlayers.Count;m++)
+                            {
+                                otherPlayers[m].addMessage("log<EOF>");
+                            }
+                        }
                     }
                 }
 

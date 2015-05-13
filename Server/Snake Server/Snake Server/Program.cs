@@ -344,6 +344,7 @@ public class AsynchronousSocketListener
         {
             if (game.players[i].handler() != handler)
             {
+                Console.WriteLine("p" + (i + 1).ToString() + header + " " + data + "<EOF>");
                 game.players[i].addMessage("p"+(i+1).ToString()+header+" "+data+"<EOF>"); 
             }
         }

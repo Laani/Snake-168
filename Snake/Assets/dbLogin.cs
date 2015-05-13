@@ -150,7 +150,7 @@ public class dbLogin : MonoBehaviour {
 			Application.LoadLevelAsync(4);
 			stopped = false;
 		}
-		if ((gameStarted)&& (Application.loadedLevel!=2)) {
+		if ((gameStarted)&& (Application.loadedLevel==2)) {
 			Application.LoadLevelAsync(2);
 		}
 		/*if (!responseRead) {
@@ -244,7 +244,6 @@ public class dbLogin : MonoBehaviour {
 					else if (response.Substring(0,3) == "sta")
 					{
 						gameStarted = true;
-						Send (client, "ackn<EOF>");
 						//Application.LoadLevel("Main");
 					}else if (response.Substring(0,3) == "one")
 					{
@@ -256,8 +255,22 @@ public class dbLogin : MonoBehaviour {
 						Debug.Log ("you are player two");
 						playerNum=2;
 						//Application.LoadLevel("Main");
+					}else if (response.Substring(0, 3) == "p1h")
+					{
+						Debug.Log ("p1h read");
+						Debug.Log(response);
+						Snake snakeManager = GameObject.Find("Snake").GetComponent<Snake>();
+						GameObject player1Obj = GameObject.Find("Player1");
+						float player1ObjX = player1Obj.transform.position.x;
+						float player1ObjY = player1Obj.transform.position.y;
+
+
+					}else if (response.Substring(0, 3) == "p2h")
+					{
+						Debug.Log ("p2h read");
+						Snake snakeManager = GameObject.Find("Snake").GetComponent<Snake>();
 					}
-					state.sb = new StringBuilder();
+					//state.sb = new StringBuilder(); // Victor told me to  comment this out - William
 				}
 
 

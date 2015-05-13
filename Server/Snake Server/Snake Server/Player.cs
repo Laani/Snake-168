@@ -36,12 +36,15 @@ namespace Snake_Server
         }
         public void addMessage(String data)
         {
+            
             messageQueue.Add(data);
         }
         public String popMessage()
         {
+            Console.WriteLine("Inside Pop Message");
             if (messageQueue.Count>0){
                 String message = messageQueue[0];
+                Console.WriteLine("Popped");
                 messageQueue.Remove(message);
                 return message;
             }

@@ -96,7 +96,7 @@ public class Snake : MonoBehaviour {
 
 			player1Score.text = username + ": " + score;
 
-		} else if (dbLogin.playerNum == "Player2") {
+		} else if (dbLogin.playerNum == 2) {
 //			if (Input.GetKey (KeyCode.RightArrow)) {
 //				if (dir != -Vector2.right) {
 //					dir = Vector2.right;
@@ -117,10 +117,10 @@ public class Snake : MonoBehaviour {
 			//Set score for player 2
 
 			// Temporary null out, re comment in later - William
-			//dbLogin loginManager = GameObject.Find("dbLogin").GetComponent<dbLogin>();
-			//string username = loginManager.getUser ();
+			dbLogin loginManager = GameObject.Find("dbLogin").GetComponent<dbLogin>();
+			string username = loginManager.getUser ();
 			
-			//player2Score.text = username + ": " + score;
+			player2Score.text = username + ": " + score;
 
 			//player2Score.text = "Player 2: " + score; // Old code don't think we need - William
 			
@@ -135,8 +135,6 @@ public class Snake : MonoBehaviour {
 
 
 			GameObject player1Obj = GameObject.Find("Player1");
-			//Debug.Log(player1Obj.transform.position.x);
-			//Debug.Log(player1Obj.transform.position.x.getType());
 			float player1ObjX = player1Obj.transform.position.x;
 			float player1ObjY = player1Obj.transform.position.y;
 			//Debug.Log("Player1ObjX, Y: (" + player1ObjX + "," + player1ObjY +")");
@@ -144,7 +142,11 @@ public class Snake : MonoBehaviour {
 			List<float> player1Location = new List<float>();
 			player1Location.Add(player1ObjX);
 			player1Location.Add(player1ObjY);
-			Debug.Log("Player1 X,Y: " + player1Location[0] + " " + player1Location[1]);
+			string player1LocationString = "head "+player1Location[0].ToString()+","+player1Location[1].ToString()+"<EOF>";
+			Debug.Log(player1LocationString);
+			//Debug.Log("Player1 X,Y: " + player1Location[0] + " " + player1Location[1]);
+			dbLogin loginManager = GameObject.Find("dbLogin").GetComponent<dbLogin>();
+			loginManager.SendToServer(player1LocationString);
 
 
 		}

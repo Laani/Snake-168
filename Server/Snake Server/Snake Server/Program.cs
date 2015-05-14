@@ -183,7 +183,7 @@ public class AsynchronousSocketListener
                                            {
                                                String message = "opp " + games[i].players[j].getPlayerName() + "<EOF>";
                                                Console.WriteLine(message);
-                                               Send(games[i].players[i].handler(), message);
+                                               games[i].players[i].addMessage( message);
                                            }
                                        }
                                     }
@@ -368,10 +368,15 @@ public class AsynchronousSocketListener
         }
         for (int i = 0; i < game.players.Count; i++)
         {
+            if (game.players[i].handler() == handler)
+            {
+                Console.WriteLine("this is the handler that sent the head data: "+game.players[i].getPlayerNum());
+            }
             if (game.players[i].handler() != handler)
             {
-                String message = "p" + (i + 1).ToString() + header + " " + data + "<EOF>";
-                Console.WriteLine("p" + (i + 1).ToString() + header + " " + data + "<EOF>");
+                Console.WriteLine("This player (not the sender) number is: "+game.players[i].getPlayerNum()+1);
+                String message = "p" + (i+1).ToString() + header + " " + data + "<EOF>";
+                Console.WriteLine("p" + (i+1).ToString() + header + " " + data + "<EOF>");
                 Send(game.players[i].handler(), message);
                 //game.players[i].addMessage("p"+(i+1).ToString()+header+" "+data+"<EOF>"); 
             }

@@ -281,11 +281,13 @@ public class dbLogin : MonoBehaviour {
 					{
 						Debug.Log ("you are player one");
 						playerNum=1;
+						Send (client, "ackn<EOF>");
 						//Application.LoadLevel("Main");
 					}else if (response.Substring(0,3) == "two")
 					{
 						Debug.Log ("you are player two");
 						playerNum=2;
+						Send (client, "ackn<EOF>");
 						//Application.LoadLevel("Main");
 					}else if (response.Substring(0, 3) == "p1h")
 					{
@@ -298,19 +300,22 @@ public class dbLogin : MonoBehaviour {
 //
 //						float player1ObjX = player1Obj.transform.position.x;
 //						float player1ObjY = player1Obj.transform.position.y;
-
+						Send (client, "ackn<EOF>");
 
 					}else if (response.Substring(0, 3) == "p2h")
 					{
 						Debug.Log ("p2h read");
 						p2Pos = response.Substring (4, response.Length - 9);
+						Send (client, "ackn<EOF>");
 						//Snake snakeManager = GameObject.Find("Snake").GetComponent<Snake>();
 					} else if (response.Substring(0, 3) == "opp") {
 						opponent = response.Substring(4, response.Length - 9);
 						Debug.Log ("opponent's name received: " + opponent);
+						Send (client, "ackn<EOF>");
 					} else if (response.Substring(0, 3) == "sco") {
 						oscore = int.Parse(response.Substring (4, response.Length - 9));
 						Debug.Log ("opponent's score: " + oscore);
+						Send (client, "ackn<EOF>");
 					}
 					//state.sb = new StringBuilder(); // Victor told me to  comment this out - William
 				}

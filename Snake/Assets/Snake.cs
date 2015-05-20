@@ -107,23 +107,6 @@ public class Snake : MonoBehaviour {
 			player2Score.text = opponent + ": " + oscore;
 
 		} else if (dbLogin.playerNum == 2) {
-//			if (Input.GetKey (KeyCode.RightArrow)) {
-//				if (dir != -Vector2.right) {
-//					dir = Vector2.right;
-//				}
-//			} else if (Input.GetKey (KeyCode.DownArrow)) {
-//				if (dir != Vector2.up) {
-//					dir = -Vector2.up;    // '-up' means 'down'
-//				}
-//			} else if (Input.GetKey (KeyCode.LeftArrow)) {
-//				if (dir != Vector2.right) {
-//					dir = -Vector2.right; // '-right' means 'left'
-//				}
-//			} else if (Input.GetKey (KeyCode.UpArrow)) {
-//				if (dir != -Vector2.up) {
-//					dir = Vector2.up;
-//				}
-//			}
 			//Set score for player 2
 
 			// Temporary null out, re comment in later - William

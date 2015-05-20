@@ -12,6 +12,7 @@ namespace Snake_Server
         public List<Player> players= new List<Player>(); //players is an array of 2 Player objects.
         private int numOfPlayers = 0;
         bool started = false;
+        private String gameName;
         List<String> playerNum = new List<String>() { "one<EOF>", "two<EOF>", "three<EOF>", "four<EOF>" };
 
         public Game()
@@ -19,13 +20,19 @@ namespace Snake_Server
 
         }
 
-        public Game(Socket handler, string name)
+        public Game(Socket handler, string playerName)
         {
-            players.Add(new Player(handler, numOfPlayers, name));
+            players.Add(new Player(handler, numOfPlayers, playerName));
             players[numOfPlayers].addMessage("one<EOF>");
             numOfPlayers++;
         }
-
+        public Game(Socket handler, string playerName, string gameName)
+        {
+            this.gameName = gameName;
+            players.Add(new Player(handler, numOfPlayers, playerName));
+            players[numOfPlayers].addMessage("one<EOF>");
+            numOfPlayers++;
+        }
         public List<Player> playerHandlers()
         {
             return players;

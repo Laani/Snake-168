@@ -28,13 +28,15 @@ public class AsynchronousSocketListener
     public static String username = String.Empty;
     public static String password = String.Empty;
 
-    public static List<Game> games=new List<Game>();
-    
+    public static List<Game> games = new List<Game>();
+
     public static int numOfGames = 0;
     public static String[] playerNum = new String[2] { "one", "two" };
 
     private static bool loggedInSuccessfully = false;
     private static int heartbeat = 100;
+
+
 
     static int times = 0;
     public AsynchronousSocketListener()
@@ -150,67 +152,13 @@ public class AsynchronousSocketListener
                 {
                     Console.WriteLine("Got a password");
                     password = content.Substring(5, content.Length - 10);
-                 
+
                     DbLogin(username, password, handler);
-                    bool addedPlayer = false;
-                    
-                    if (loggedInSuccessfully)
-                    {
-                        if ((games.Count==0)&& (addedPlayer==false)) //if no games are initialized
-                        {
-                            games.Add(new Game(handler,username));
-                            times++;
-                            Console.WriteLine(times.ToString());
-                            addedPlayer = true;
-                        }
-                        else if (addedPlayer==false)//if there are initialized games
-                        {
-                            /*For all initialized games, look for ones that aren't full. 
-                             Add player if a non-full game is found*/
-                            for (int i = 0; i < games.Count; i++)
-                            {
-                                if (games[i].isGameNotFull())
-                                {
-                                    games[i].addPlayer(handler,username);
-                                    addedPlayer = true;
-                                    if (games[i].isGameFull())
-                                    {
-                                       //addMessageToAllPlayers(games[i], "sta<EOF>");
-                                       SendToAllPlayers(games[i].players, "sta<EOF>");
-                                       for (int j = 0; j < games[i].players.Count; j++)
-                                       {
-                                           if (games[i].players[j].handler() != handler)
-                                           {
-                                               String message = "opp " + games[i].players[j].getPlayerName() + "<EOF>";
-                                               Console.WriteLine(message);
-                                               games[i].players[i].addMessage( message);
-                                           }
-                                       }
-                                    }
-                                }
-                            }
-
-                            /*if there are no empty/nonfull games, create a new one for this player*/
-                            if (addedPlayer == false)
-                            {
-                                games.Add(new Game(handler,username));
-
-                                times++;
-                                Console.WriteLine(times.ToString());
-
-                                addedPlayer = true;
-                            }
-                        }
-                        
-                       
-                        loggedInSuccessfully = false;
-                        addedPlayer = false;
-                    }
                 }
-                else if (content.Substring(0,4)=="ackn")
+                else if (content.Substring(0, 4) == "ackn")
                 {
                     Console.WriteLine("ackn received");
-                    for (int i =0;i<games.Count;i++)
+                    for (int i = 0; i < games.Count; i++)
                     {
                         if (games[i].playerInThisGame(handler))
                         {
@@ -225,7 +173,7 @@ public class AsynchronousSocketListener
                 else if (content.Substring(0, 4) == "head")
                 {
                     String head = content.Substring(5, content.Length - 10);
-                    Game thisGame=null;
+                    Game thisGame = null;
                     for (int i = 0; i < games.Count; i++)
                     {
                         for (int m = 0; m < games[i].players.Count; m++)
@@ -238,17 +186,17 @@ public class AsynchronousSocketListener
                     }
 
 
-                     if (thisGame != null)
-                     {
-                        sendLocation(thisGame, handler, head,"head");
+                    if (thisGame != null)
+                    {
+                        sendLocation(thisGame, handler, head, "head");
                         //SendToOtherPlayers(handler, allPlayerInGame, head + "<EOF>"); //#locationsending
-                     }
-                    
+                    }
+
                 }
                 else if (content.Substring(0, 4) == "tail")
                 {
                     String tail = content.Substring(5, content.Length - 10);
-                    Game thisGame=null;
+                    Game thisGame = null;
                     for (int i = 0; i < games.Count; i++)
                     {
                         for (int m = 0; m < games[i].players.Count; m++)
@@ -261,12 +209,12 @@ public class AsynchronousSocketListener
                     }
 
 
-                     if (thisGame != null)
-                     {
-                        sendLocation(thisGame, handler, tail ,"tail");
+                    if (thisGame != null)
+                    {
+                        sendLocation(thisGame, handler, tail, "tail");
                         //SendToOtherPlayers(handler, allPlayerInGame, head + "<EOF>"); //#locationsending
-                     }
-                    
+                    }
+
                 }
                 else if (content.Substring(0, 4) == "1sco")
                 {
@@ -306,18 +254,35 @@ public class AsynchronousSocketListener
                         thisGame.players[1].addScore();
                     }
                 }
-                else if (content.Substring(0,4)=="quit")
+
+                else if (content.Substring(0,4) == "food")
                 {
+                    //add score to correct player base on handler
+                    //update score to all players
+
+                }
+                //make a player per game send food pellet location to server.
+                //server echoes the location to all players
+
+
+                else if (content.Substring(0, 4) == "quit")
+                {
+                    int gameNum=-1;
                     for (int i = 0; i < games.Count; i++)
                     {
                         if (games[i].playerInThisGame(handler))
                         {
                             List<Player> otherPlayers = games[i].getOtherPlayers(handler);
-                            for (int m =0;m<otherPlayers.Count;m++)
+                            for (int m = 0; m < otherPlayers.Count; m++)
                             {
-                                otherPlayers[m].addMessage("log<EOF>");
+                                Send(otherPlayers[m].handler(), "qui<EOF>");
                             }
                         }
+                    }
+                    //Kathy, remove game from database as well.
+                    if (gameNum != -1)
+                    {
+                        games.Remove(games[gameNum]);
                     }
                 }
 
@@ -335,14 +300,14 @@ public class AsynchronousSocketListener
             else
             {
                 // Not all data received. Get more.
-               // handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-               // new AsyncCallback(ReadCallback), state);
-                if (heartbeat==0)
+                // handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                // new AsyncCallback(ReadCallback), state);
+                if (heartbeat == 0)
                 {
                     heartbeat = 100;
-                    for (int i =0; i<games.Count;i++)
+                    for (int i = 0; i < games.Count; i++)
                     {
-                        for (int m =0; m<games[i].players.Count;m++)
+                        for (int m = 0; m < games[i].players.Count; m++)
                         {
                             Send(games[i].players[m].handler(), "hear");
                         }
@@ -355,23 +320,24 @@ public class AsynchronousSocketListener
     }
 
 
-    private static void sendLocation(Game game,Socket handler,String data,String type)
+
+    private static void sendLocation(Game game, Socket handler, String data, String type)
     {
-        String header="";
-        if (type=="head")
+        String header = "";
+        if (type == "head")
         {
             header = "h";
         }
-        else if (type =="tail")
+        else if (type == "tail")
         {
             header = "t";
         }
         int from = 0;
-        for (int i = 0; i < game.players.Count;i++ )
+        for (int i = 0; i < game.players.Count; i++)
         {
             if (game.players[i].handler() == handler)
             {
-                from = game.players[i].getPlayerNum()+1;
+                from = game.players[i].getPlayerNum() + 1;
             }
         }
 
@@ -392,10 +358,122 @@ public class AsynchronousSocketListener
         }
     }
 
+    private static void host(Socket handler, String gameName)
+    //opens database connection, checks if game name exists, send message to client saying game already exists, 
+    //otherwise, add a new game to the database
+    {
+        //        if ((games.Count==0)&& (addedPlayer==false)) //if no games are initialized
+        //        {
+        //            games.Add(new Game(handler,username));
+        //            times++;
+        //            Console.WriteLine(times.ToString());
+        //            addedPlayer = true;
+        //        }
+        //        else if (addedPlayer==false)//if there are initialized games
+        //        {
+        //            /*For all initialized games, look for ones that aren't full. 
+        //             Add player if a non-full game is found*/
+        //            for (int i = 0; i < games.Count; i++)
+        //            {
+        //                if (games[i].isGameNotFull())
+        //                {
+        //                    games[i].addPlayer(handler,username);
+        //                    addedPlayer = true;
+        //                    if (games[i].isGameFull())
+        //                    {
+        //                       //addMessageToAllPlayers(games[i], "sta<EOF>");
+        //                       SendToAllPlayers(games[i].players, "sta<EOF>");
+        //                       for (int j = 0; j < games[i].players.Count; j++)
+        //                       {
+        //                           if (games[i].players[j].handler() != handler)
+        //                           {
+        //                               String message = "opp " + games[i].players[j].getPlayerName() + "<EOF>";
+        //                               Console.WriteLine(message);
+        //                               games[i].players[i].addMessage( message);
+        //                           }
+        //                       }
+        //                    }
+        //                }
+        //            }
+
+        //            /*if there are no empty/nonfull games, create a new one for this player*/
+        //            if (addedPlayer == false)
+        //            {
+        //                games.Add(new Game(handler,username));
+
+        //                times++;
+        //                Console.WriteLine(times.ToString());
+
+        //                addedPlayer = true;
+        //            }
+        //        }
+
+
+        //        loggedInSuccessfully = false;
+        //        addedPlayer = false;
+        //    }
+        //}
+    }
+    private static void join(Socket handler, String gameName)
+    //opens database connection, check if gamename exists, add player to game if game exists, else send message to 
+    //client that the game doesn't exist. 
+    {
+        //        if ((games.Count==0)&& (addedPlayer==false)) //if no games are initialized
+        //        {
+        //            games.Add(new Game(handler,username));
+        //            times++;
+        //            Console.WriteLine(times.ToString());
+        //            addedPlayer = true;
+        //        }
+        //        else if (addedPlayer==false)//if there are initialized games
+        //        {
+        //            /*For all initialized games, look for ones that aren't full. 
+        //             Add player if a non-full game is found*/
+        //            for (int i = 0; i < games.Count; i++)
+        //            {
+        //                if (games[i].isGameNotFull())
+        //                {
+        //                    games[i].addPlayer(handler,username);
+        //                    addedPlayer = true;
+        //                    if (games[i].isGameFull())
+        //                    {
+        //                       //addMessageToAllPlayers(games[i], "sta<EOF>");
+        //                       SendToAllPlayers(games[i].players, "sta<EOF>");
+        //                       for (int j = 0; j < games[i].players.Count; j++)
+        //                       {
+        //                           if (games[i].players[j].handler() != handler)
+        //                           {
+        //                               String message = "opp " + games[i].players[j].getPlayerName() + "<EOF>";
+        //                               Console.WriteLine(message);
+        //                               games[i].players[i].addMessage( message);
+        //                           }
+        //                       }
+        //                    }
+        //                }
+        //            }
+
+        //            /*if there are no empty/nonfull games, create a new one for this player*/
+        //            if (addedPlayer == false)
+        //            {
+        //                games.Add(new Game(handler,username));
+
+        //                times++;
+        //                Console.WriteLine(times.ToString());
+
+        //                addedPlayer = true;
+        //            }
+        //        }
+
+
+        //        loggedInSuccessfully = false;
+        //        addedPlayer = false;
+        //    }
+        //}
+    }
 
     private static void addMessageToAllPlayers(Game game, String data)
     {
-        for (int i =0; i < game.players.Count;i++)
+        for (int i = 0; i < game.players.Count; i++)
         {
             game.players[i].addMessage(data);
         }
@@ -416,10 +494,10 @@ public class AsynchronousSocketListener
 
     private static void SendToAllPlayers(List<Player> players, String data)
     {
-        
+
         for (int i = 0; i < players.Count; i++)
         {
-            if (players[i].handler()==null)
+            if (players[i].handler() == null)
             {
                 Console.WriteLine("handler is null");
             }
@@ -452,13 +530,13 @@ public class AsynchronousSocketListener
         // Begin sending the data to the remote device.
         handler.BeginSend(byteData, 0, byteData.Length, 0,
             new AsyncCallback(SendCallback), handler);
-        for (int i = 0; i < games.Count;i++ )
+        for (int i = 0; i < games.Count; i++)
         {
-            for (int m =0; m<games[i].players.Count;m++)
+            for (int m = 0; m < games[i].players.Count; m++)
             {
                 if (handler == games[i].players[m].handler())
                 {
-                    Console.WriteLine("Sent " + data + " to client " + (games[i].players[m].getPlayerNum()+1));
+                    Console.WriteLine("Sent " + data + " to client " + (games[i].players[m].getPlayerNum() + 1));
                 }
             }
         }

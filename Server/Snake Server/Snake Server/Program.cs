@@ -366,17 +366,26 @@ public class AsynchronousSocketListener
         {
             header = "t";
         }
+        int from = 0;
+        for (int i = 0; i < game.players.Count;i++ )
+        {
+            if (game.players[i].handler() == handler)
+            {
+                from = game.players[i].getPlayerNum()+1;
+            }
+        }
+
         for (int i = 0; i < game.players.Count; i++)
         {
             if (game.players[i].handler() == handler)
             {
-                Console.WriteLine("this is the handler that sent the head data: "+game.players[i].getPlayerNum());
+                Console.WriteLine("this is the handler that sent the head data: " + (game.players[i].getPlayerNum() + 1));
             }
-            if (game.players[i].handler() != handler)
+            else if (game.players[i].handler() != handler)
             {
-                Console.WriteLine("This player (not the sender) number is: "+game.players[i].getPlayerNum()+1);
-                String message = "p" + (i+1).ToString() + header + " " + data + "<EOF>";
-                Console.WriteLine("p" + (i+1).ToString() + header + " " + data + "<EOF>");
+                Console.WriteLine("This player (not the sender) number is: " + (game.players[i].getPlayerNum() + 1));
+                String message = "p" + from.ToString() + header + " " + data + "<EOF>";
+                Console.WriteLine(message);
                 Send(game.players[i].handler(), message);
                 //game.players[i].addMessage("p"+(i+1).ToString()+header+" "+data+"<EOF>"); 
             }
@@ -443,7 +452,16 @@ public class AsynchronousSocketListener
         // Begin sending the data to the remote device.
         handler.BeginSend(byteData, 0, byteData.Length, 0,
             new AsyncCallback(SendCallback), handler);
-        Console.WriteLine("Sent " + data + " to client " + handler.AddressFamily);
+        for (int i = 0; i < games.Count;i++ )
+        {
+            for (int m =0; m<games[i].players.Count;m++)
+            {
+                if (handler == games[i].players[m].handler())
+                {
+                    Console.WriteLine("Sent " + data + " to client " + (games[i].players[m].getPlayerNum()+1));
+                }
+            }
+        }
     }
 
     private static void SendCallback(IAsyncResult ar)

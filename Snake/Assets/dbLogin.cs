@@ -294,7 +294,8 @@ public class dbLogin : MonoBehaviour {
 						Debug.Log ("p1h read");
 						Debug.Log(response);
 						p1Pos = response.Substring (4, response.Length - 9);
-
+						String p1posx = p1Pos.Substring(0,p1Pos.IndexOf(",")+1);
+						Debug.Log (p1posx);
 						//Snake snakeManager = GameObject.Find("Snake").GetComponent<Snake>();
 //						GameObject player1Obj = GameObject.Find("Player1");
 //
@@ -306,8 +307,16 @@ public class dbLogin : MonoBehaviour {
 					{
 						Debug.Log ("p2h read");
 						p2Pos = response.Substring (4, response.Length - 9);
-						Send (client, "ackn<EOF>");
+						Debug.Log (p2Pos);
+
 						//Snake snakeManager = GameObject.Find("Snake").GetComponent<Snake>();
+//						GameObject player2Obj = GameObject.Find("Player2");
+//						
+//						float player2ObjX = player2Obj.transform.position.x;
+//						float player2ObjY = player2Obj.transform.position.y;
+						Send (client, "ackn<EOF>");
+
+
 					} else if (response.Substring(0, 3) == "opp") {
 						opponent = response.Substring(4, response.Length - 9);
 						Debug.Log ("opponent's name received: " + opponent);

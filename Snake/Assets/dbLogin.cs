@@ -16,7 +16,7 @@ public class dbLogin : MonoBehaviour {
 	public static string p2Pos;
 	public static string opponent;
 	public static int oscore=0;
-
+	static float x, y;
 	private Socket client;
 
 	private static bool stopped = false;
@@ -24,6 +24,9 @@ public class dbLogin : MonoBehaviour {
 	private const int port = 11000;
 	private static ManualResetEvent connectDone;
 	private static String response;
+
+	private static bool updated=false;
+
 	// private static bool responseRead = true;
 
 	public string getUser() {
@@ -183,6 +186,12 @@ public class dbLogin : MonoBehaviour {
 		if ((gameStarted)&& (Application.loadedLevel!=2)) {
 			Application.LoadLevelAsync(2);
 		}
+		if (updated)
+		{
+			GameObject player1Obj = GameObject.Find("Player1");
+			player1Obj.transform.position= new Vector3(x,y,0);
+			updated = false;
+		}
 
 		/*if (!responseRead) {
 			Debug.Log ("Response received: " + response);
@@ -291,16 +300,20 @@ public class dbLogin : MonoBehaviour {
 						//Application.LoadLevel("Main");
 					}else if (response.Substring(0, 3) == "p1h")
 					{
+
 						Debug.Log ("p1h read");
 						Debug.Log(response);
 						p1Pos = response.Substring (4, response.Length - 9);
-						String p1posx = p1Pos.Substring(0,p1Pos.IndexOf(",")+1);
+						String p1posx = p1Pos.Substring(0,p1Pos.IndexOf(","));
+						String p1posy = p1Pos.Substring(p1Pos.IndexOf(",")+1);
 						Debug.Log (p1posx);
+						Debug.Log (p1posy);
 						//Snake snakeManager = GameObject.Find("Snake").GetComponent<Snake>();
-//						GameObject player1Obj = GameObject.Find("Player1");
-//
-//						float player1ObjX = player1Obj.transform.position.x;
-//						float player1ObjY = player1Obj.transform.position.y;
+
+						dbLogin.x = float.Parse(p1posx);
+						dbLogin.y = float.Parse(p1posy);
+
+						updated = true;
 						Send (client, "ackn<EOF>");
 
 					}else if (response.Substring(0, 3) == "p2h")

@@ -19,6 +19,8 @@ public class dbLogin : MonoBehaviour {
 	static float p1x, p1y,p2x,p2y;
 	private Socket client;
 
+	private static Text openGames;
+	private static string listOfGames = "Open Games: ";
 	private static bool stopped = false;
 	private static bool gameStarted = false;
 	private const int port = 11000;
@@ -28,6 +30,7 @@ public class dbLogin : MonoBehaviour {
 	private static bool p1updated=false;
 	private static bool p2updated = false;
 
+	private static string errorMessage = "";
 	// private static bool responseRead = true;
 
 	public string getUser() {
@@ -198,6 +201,19 @@ public class dbLogin : MonoBehaviour {
 			player2Obj.transform.position=new Vector3 (p2x,p2y,0);
 			p2updated=false;
 		}
+		if (Application.loadedLevelName=="Lobby") {
+
+			openGames = GameObject.Find("Open Game List").GetComponent<Text>();
+			openGames.text = listOfGames;
+		}
+
+		if (errorMessage != "") {
+			GameObject error = GameObject.Find("Error");
+			Text x = error.GetComponent<Text>();
+			x.text = errorMessage;
+			errorMessage="";
+		}
+
 		/*if (!responseRead) {
 			Debug.Log ("Response received: " + response);
 			responseRead = true;
@@ -277,13 +293,6 @@ public class dbLogin : MonoBehaviour {
 						Debug.Log("You have entered the wrong password for " + username + ". Please try again.");
 					} else if (response.Substring(0, 3) == "reg") {
 						Debug.Log(username + " has been registered.");
-						/*try {
-							client.Shutdown(SocketShutdown.Both);
-						}
-						catch (SocketException e) {
-							Debug.Log ("Socket closed remotely");
-						}
-						client.Close();*/
 						stopped = true;
 					}
 					else if (response.Substring(0,3) == "sta")
@@ -351,6 +360,15 @@ public class dbLogin : MonoBehaviour {
 						oscore = int.Parse(response.Substring (4, response.Length - 9));
 						Debug.Log ("opponent's score: " + oscore);
 						Send (client, "ackn<EOF>");
+					}
+					else if (response.Substring(0,3) == "ope")
+					{
+						listOfGames = "Open Game Names: "+ response.Substring(4,response.Length-9);
+
+					}
+					else if (response.Substring(0,3)=="err")
+					{
+						errorMessage = response.Substring(4,response.Length-9);
 					}
 					else if (response.Substring(0,3) == "qui")
 					{

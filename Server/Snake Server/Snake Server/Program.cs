@@ -35,7 +35,7 @@ public class AsynchronousSocketListener
 
     private static bool loggedInSuccessfully = false;
     private static int heartbeat = 100;
-
+    public static List<Player> players = new List<Player>();
 
 
     static int times = 0;
@@ -154,6 +154,7 @@ public class AsynchronousSocketListener
                     password = content.Substring(5, content.Length - 10);
 
                     DbLogin(username, password, handler);
+                    players.Add(new Player(handler, username));
                 }
                 else if (content.Substring(0, 4) == "ackn")
                 {
@@ -216,6 +217,24 @@ public class AsynchronousSocketListener
                     }
 
                 }
+
+                else if (content.Substring(0, 4) == "list")
+                {
+                    Console.WriteLine("client asked for game list");
+                    string gameNames = "ope ";
+                    for (int i =0; i<games.Count;i++)
+                    {
+                        gameNames += games[i].getGameName();
+                        if (i!=games.Count-1)
+                        {
+                            gameNames += ", ";
+                        }
+                        
+                    }
+                    gameNames += "<EOF>";
+                    Send(handler, gameNames);
+                }
+
                 else if (content.Substring(0, 4) == "1sco")
                 {
                     Game thisGame = null;
@@ -263,8 +282,14 @@ public class AsynchronousSocketListener
                 }
                 //make a player per game send food pellet location to server.
                 //server echoes the location to all players
+                else if (content.Substring(0,4)=="host")
+                {
+                   
+                    string gameName = content.Substring(5, content.Length - 10);
+                    Console.WriteLine(gameName);
+                    host(handler, gameName);
 
-
+                }
                 else if (content.Substring(0, 4) == "quit")
                 {
                     int gameNum=-1;
@@ -362,6 +387,50 @@ public class AsynchronousSocketListener
     //opens database connection, checks if game name exists, send message to client saying game already exists, 
     //otherwise, add a new game to the database
     {
+        bool exists = false;
+        for (int i = 0; i < games.Count; i++)
+        {
+            if (games[i].getGameName() == gameName)
+            {
+                Send(handler, "err Game name already in use!<EOF>"); //doesn't make game cause game name exists
+                return;
+                exists = true;
+            }
+            List<Player> players = games[i].players;
+            for (int m =0; m<players.Count;m++)
+            {
+                if (players[i].handler() == handler)
+                {
+                    Send(handler, "err You are already hosting a game!<EOF>");
+                    exists = true;
+                }
+
+            }
+        }
+        if (exists == false)
+        {
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (players[i].handler() == handler)
+                {
+                    games.Add(new Game(handler, players[i], gameName));
+                }
+            }
+            string gameNames = "ope ";
+            for (int i = 0; i < games.Count; i++)
+            {
+                Console.WriteLine(games[i].getGameName());
+                gameNames += games[i].getGameName();
+                if (i != games.Count - 1)
+                {
+                    gameNames += ", ";
+                }
+
+            }
+            gameNames += "<EOF>";
+            Console.WriteLine("game names: " + gameNames);
+            Send(handler, gameNames);
+        }
         //        if ((games.Count==0)&& (addedPlayer==false)) //if no games are initialized
         //        {
         //            games.Add(new Game(handler,username));

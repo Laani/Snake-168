@@ -26,18 +26,23 @@ namespace Snake_Server
             players[numOfPlayers].addMessage("one<EOF>");
             numOfPlayers++;
         }
-        public Game(Socket handler, string playerName, string gameName)
+        public Game(Socket handler, Player player, string gameName)
         {
-            this.gameName = gameName;
-            players.Add(new Player(handler, numOfPlayers, playerName));
+            players.Add(player);
             players[numOfPlayers].addMessage("one<EOF>");
             numOfPlayers++;
+            this.gameName = gameName;
         }
+    
         public List<Player> playerHandlers()
         {
             return players;
         }
 
+        public String getGameName()
+        {
+            return gameName;
+        }
         //public String addPlayer(Socket handler)
         //{
         //    if (this.isGameNotFull())

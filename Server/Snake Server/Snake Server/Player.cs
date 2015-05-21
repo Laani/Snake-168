@@ -15,13 +15,19 @@ namespace Snake_Server
         string playerName;
         int score;
 
+        public Player(Socket handler, string name)
+        {
+            playerHandler = handler;
+            playerName = name;
+        }
+
         public Player(Socket handler,int num,string name)
         {
             playerHandler = handler;
             playerNum = num;
             playerName = name;
             score = 0;
-            Console.WriteLine(playerHandler.LocalEndPoint);
+           
         }
 
         public int getPlayerNum()

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using Snake_Server;
+
 // State object for reading client data asynchronously
 public class StateObject
 {
@@ -37,6 +38,7 @@ public class AsynchronousSocketListener
     private static int heartbeat = 100;
     public static List<Player> players = new List<Player>();
 
+    public static SQLiteConnection m_dbConnection;
 
     static int times = 0;
     public AsynchronousSocketListener()
@@ -93,6 +95,10 @@ public class AsynchronousSocketListener
 
     public static void AcceptCallback(IAsyncResult ar)
     {
+        m_dbConnection =
+            new SQLiteConnection("Data Source=dbGame.db;Version=3;");
+        m_dbConnection.Open();
+
         // Signal the main thread to continue.
         allDone.Set();
 
@@ -292,11 +298,13 @@ public class AsynchronousSocketListener
                 }
                 else if (content.Substring(0, 4) == "quit")
                 {
+                    // Remove the game from the server list
                     int gameNum=-1;
                     for (int i = 0; i < games.Count; i++)
                     {
                         if (games[i].playerInThisGame(handler))
                         {
+                            gameNum = i;
                             List<Player> otherPlayers = games[i].getOtherPlayers(handler);
                             for (int m = 0; m < otherPlayers.Count; m++)
                             {
@@ -304,10 +312,21 @@ public class AsynchronousSocketListener
                             }
                         }
                     }
-                    //Kathy, remove game from database as well.
+                    
                     if (gameNum != -1)
                     {
                         games.Remove(games[gameNum]);
+
+                        // Remove the game from the database of active games
+                        string query = "SELECT gameid FROM tb_games WHERE gameid = '" + gameNum + "'";
+                        SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
+                        SQLiteDataReader reader = command.ExecuteReader();
+                        if (reader.Read())
+                        {
+                            query = "DELETE FROM tb_games WHERE gameid = '" + gameNum + "'";
+                            SQLiteCommand command2 = new SQLiteCommand(query, m_dbConnection);
+                            command2.ExecuteNonQuery();
+                        }
                     }
                 }
 
@@ -387,12 +406,13 @@ public class AsynchronousSocketListener
     //opens database connection, checks if game name exists, send message to client saying game already exists, 
     //otherwise, add a new game to the database
     {
+        // Check if the game exists
         bool exists = false;
         for (int i = 0; i < games.Count; i++)
         {
             if (games[i].getGameName() == gameName)
             {
-                Send(handler, "err Game name already in use!<EOF>"); //doesn't make game cause game name exists
+                Send(handler, "err Game name already in use!<EOF>"); // doesn't make game cause game name exists
                 return;
                 exists = true;
             }
@@ -404,16 +424,18 @@ public class AsynchronousSocketListener
                     Send(handler, "err You are already hosting a game!<EOF>");
                     exists = true;
                 }
-
             }
         }
-        if (exists == false)
+        // If the game doesn't exist, create one!
+        if (!exists)
         {
+            string player1 = "";
             for (int i = 0; i < players.Count; i++)
             {
                 if (players[i].handler() == handler)
                 {
                     games.Add(new Game(handler, players[i], gameName));
+                    player1 = players[i].getPlayerName();
                 }
             }
             string gameNames = "ope ";
@@ -430,6 +452,11 @@ public class AsynchronousSocketListener
             gameNames += "<EOF>";
             Console.WriteLine("game names: " + gameNames);
             Send(handler, gameNames);
+
+            // Also make sure to add it to the database with the current player as player1
+            string query = "INSERT INTO tb_games (gameid, gameName, player1) VALUES ('" + (games.Count - 1) + "', '" + gameName + "', '" + player1 + "')";
+            SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
+            command.ExecuteNonQuery();
         }
         //        if ((games.Count==0)&& (addedPlayer==false)) //if no games are initialized
         //        {
@@ -630,10 +657,6 @@ public class AsynchronousSocketListener
 
     private static void DbLogin(String username, String password, Socket handler)
     {
-        SQLiteConnection m_dbConnection =
-            new SQLiteConnection("Data Source=dbGame.db;Version=3;");
-        m_dbConnection.Open();
-
         string query = "SELECT username, password FROM tb_users WHERE username = '" + username + "'";
         SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
         SQLiteDataReader reader = command.ExecuteReader();

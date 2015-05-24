@@ -20,7 +20,9 @@ public class dbLogin : MonoBehaviour {
 	private Socket client;
 
 	private static Text openGames;
+	private static Text playerList;
 	private static string listOfGames = "Open Games: ";
+	private static string listOfPlayers = "";
 	private static bool stopped = false;
 	private static bool gameStarted = false;
 	private const int port = 11000;
@@ -36,7 +38,7 @@ public class dbLogin : MonoBehaviour {
 	private static bool goToGameRoom = false;
 	private static bool gotMembers = false;
 	private static string playerNames = "";
-
+	private static bool someoneQuit = false;
 	public string getUser() {
 		return username;
 	}
@@ -187,7 +189,7 @@ public class dbLogin : MonoBehaviour {
 			Receive (client);
 		}
 		if (stopped) {
-			Debug.Log("opening load page");
+			//Debug.Log("opening load page");
 			Application.LoadLevelAsync("Lobby");
 			stopped = false;
 		}
@@ -206,14 +208,18 @@ public class dbLogin : MonoBehaviour {
 			p2updated=false;
 		}
 
-		
+		if (someoneQuit && (Application.loadedLevelName != "Lobby")){
+			Application.LoadLevelAsync("Lobby");
+			someoneQuit = false;
+			
+		}	
 		if ((goToGameRoom) && (Application.loadedLevelName != "LobbyEnter")) {
 			
 			Application.LoadLevelAsync("LobbyEnter");
 			
 			//Application.LoadLevelAsync("Game Room"); // Wrong name? - william
 		}
-		
+	
 
 
 		if (Application.loadedLevelName=="Lobby") {
@@ -221,7 +227,13 @@ public class dbLogin : MonoBehaviour {
 			openGames = GameObject.Find("Open Game List").GetComponent<Text>();
 			openGames.text = listOfGames;
 		}
+		if (Application.loadedLevelName=="LobbyEnter"){
+			//someoneQuit = false; // If someone quit, this will be true and sent to someoneQuit
+			playerList = GameObject.Find("Players").GetComponent<Text>();
+			playerList.text = listOfPlayers;
+		}
 
+		
 		if (gotMembers) {
 			Text membersList = GameObject.Find ("Players").GetComponent<Text>();
 			membersList.text = playerNames;
@@ -385,18 +397,21 @@ public class dbLogin : MonoBehaviour {
 					}
 					else if (response.Substring(0,3) == "ope")
 					{
-						listOfGames = "Open Game Names: "+ response.Substring(4,response.Length-9);
+						listOfGames = "Open Games: "+ response.Substring(4,response.Length-9);
 
 
 					}
 					else if (response.Substring(0,3) == "joi")
 					{
-
 						goToGameRoom = true;
 					}
 					else if (response.Substring(0,3) == "hos")
 					{
 						goToGameRoom = true;
+					}
+					else if (response.Substring(0,3) == "pla")
+					{
+						listOfPlayers += response.Substring(4, response.Length-9);
 					}
 					else if (response.Substring(0,3) == "mem")
 					{
@@ -412,7 +427,9 @@ public class dbLogin : MonoBehaviour {
 					else if (response.Substring(0,3) == "qui")
 					{
 						Debug.Log("opponent disconnected. gg no re");
-						Application.LoadLevelAsync("Lobby");
+						//Application.LoadLevelAsync("Lobby"); //This doesn't work here, have to be called in update()
+						someoneQuit = true;
+						goToGameRoom = false;
 						Send (client, "ackn<EOF>");
 					}
 

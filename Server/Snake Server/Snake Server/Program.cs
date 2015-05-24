@@ -464,7 +464,7 @@ public class AsynchronousSocketListener
             {
                 if (players[i].handler() == handler)
                 {
-                    Send(handler, "err You are already hosting a game!<EOF>"); //changed in a game to hosting - William
+                    Send(handler, "err You are already hosting a game!<EOF>"); //changed 'in a game' to 'hosting' - William
                     exists = true;
                 }
             }
@@ -507,20 +507,22 @@ public class AsynchronousSocketListener
     //opens database connection, check if gamename exists, add player to game if game exists, else send message to 
     //client that the game doesn't exist. 
     {
-
+        string playerNames = "";
+        //If there are games, for the amount of players, if you are the handler, put yourself into the game.
         for (int i = 0; i < games.Count; i++)
         {
             for (int m = 0; m < games[i].players.Count; m++)
             {
                 if (games[i].players[m].handler() == handler)
                 {
+                    playerNames += username;
                     Send(handler, "hos Entering your game<EOF>"); // Changed to if you join as host u send a host code - William
                     return;
                 }
             }
         }
 
-
+        // If there is this game name and game is not full. add player to that game.
         for (int i = 0; i < games.Count; i++)
         {
             if (games[i].getGameName() == gameName)
@@ -528,12 +530,16 @@ public class AsynchronousSocketListener
                 if (games[i].isGameNotFull())
                 {
                     games[i].addPlayer(handler, username);
+                    playerNames += username;
+                    
                     Send(handler, "joi <EOF>");
                     return;
                 }
+                
             }
         }
         Send(handler, "err Game name does not exist.<EOF>");
+
 
         //        if ((games.Count==0)&& (addedPlayer==false)) //if no games are initialized
         //        {

@@ -464,7 +464,7 @@ public class AsynchronousSocketListener
             {
                 if (players[i].handler() == handler)
                 {
-                    Send(handler, "err You are already in a game!<EOF>");
+                    Send(handler, "err You are already hosting a game!<EOF>"); //changed in a game to hosting - William
                     exists = true;
                 }
             }
@@ -514,7 +514,7 @@ public class AsynchronousSocketListener
             {
                 if (games[i].players[m].handler() == handler)
                 {
-                    Send(handler, "err You are already in a game<EOF>");
+                    Send(handler, "hos Entering your game<EOF>"); // Changed to if you join as host u send a host code - William
                     return;
                 }
             }

@@ -32,6 +32,7 @@ public class LobbyScreen : MonoBehaviour {
 
 	public void Join()
 	{
+		game = gameNameIF.text;
 		x.SendToServer ("join " + game+"<EOF>");
 	}
 }

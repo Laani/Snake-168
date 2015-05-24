@@ -206,9 +206,14 @@ public class dbLogin : MonoBehaviour {
 			p2updated=false;
 		}
 
-		if ((goToGameRoom) && (Application.loadedLevelName != "Game Room")) {
-			Application.LoadLevelAsync("Game Room");
+		
+		if ((goToGameRoom) && (Application.loadedLevelName != "LobbyEnter")) {
+			
+			Application.LoadLevelAsync("LobbyEnter");
+			
+			//Application.LoadLevelAsync("Game Room"); // Wrong name? - william
 		}
+		
 
 
 		if (Application.loadedLevelName=="Lobby") {
@@ -382,8 +387,14 @@ public class dbLogin : MonoBehaviour {
 					{
 						listOfGames = "Open Game Names: "+ response.Substring(4,response.Length-9);
 
+
 					}
 					else if (response.Substring(0,3) == "joi")
+					{
+
+						goToGameRoom = true;
+					}
+					else if (response.Substring(0,3) == "hos")
 					{
 						goToGameRoom = true;
 					}
@@ -404,6 +415,8 @@ public class dbLogin : MonoBehaviour {
 						Application.LoadLevelAsync("Lobby");
 						Send (client, "ackn<EOF>");
 					}
+
+
 					//state.sb = new StringBuilder(); // Victor told me to  comment this out - William
 				}
 

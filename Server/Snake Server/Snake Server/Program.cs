@@ -228,14 +228,14 @@ public class AsynchronousSocketListener
                 {
                     Console.WriteLine("client asked for game list");
                     string gameNames = "ope ";
-                    for (int i =0; i<games.Count;i++)
+                    for (int i = 0; i < games.Count; i++)
                     {
                         gameNames += games[i].getGameName();
-                        if (i!=games.Count-1)
+                        if (i != games.Count - 1)
                         {
                             gameNames += ", ";
                         }
-                        
+
                     }
                     gameNames += "<EOF>";
                     Send(handler, gameNames);
@@ -280,7 +280,7 @@ public class AsynchronousSocketListener
                     }
                 }
 
-                else if (content.Substring(0,4) == "food")
+                else if (content.Substring(0, 4) == "food")
                 {
                     //add score to correct player base on handler
                     //update score to all players
@@ -288,18 +288,39 @@ public class AsynchronousSocketListener
                 }
                 //make a player per game send food pellet location to server.
                 //server echoes the location to all players
-                else if (content.Substring(0,4)=="host")
+                else if (content.Substring(0, 4) == "host")
                 {
-                   
+
                     string gameName = content.Substring(5, content.Length - 10);
                     Console.WriteLine(gameName);
                     host(handler, gameName);
 
                 }
+                else if (content.Substring(0, 4) == "join")
+                {
+                    string gameName = content.Substring(5, content.Length - 10);
+                    join(handler, gameName);
+                }
+                else if (content.Substring(0, 4) == "lobb") //getting all players in lobby
+                {
+                    for (int i = 0; i < games.Count; i++)
+                    {
+                        for (int m = 0; m < games[i].players.Count; m++)
+                        {
+                            if (games[i].players[m].handler() == handler)
+                            {
+                                string members = lobbyPlayers(games[i], handler);
+                                Send(handler, members + "<EOF>");
+                                
+                            }
+                        }
+                    }
+                }
+
                 else if (content.Substring(0, 4) == "quit")
                 {
                     // Remove the game from the server list
-                    int gameNum=-1;
+                    int gameNum = -1;
                     for (int i = 0; i < games.Count; i++)
                     {
                         if (games[i].playerInThisGame(handler))
@@ -312,7 +333,7 @@ public class AsynchronousSocketListener
                             }
                         }
                     }
-                    
+
                     if (gameNum != -1)
                     {
                         games.Remove(games[gameNum]);
@@ -363,7 +384,29 @@ public class AsynchronousSocketListener
         }
     }
 
-
+    private static string lobbyPlayers(Game game, Socket handler)
+    {
+        string playerString = "mem ";
+        for (int i = 0; i < game.players.Count; i++)
+        {
+            playerString += game.players[i].getPlayerName() + " ";
+            if (game.players[i].getPlayerNum() == 1)
+            {
+                playerString += "(host)\n";
+            }
+            else if (game.players[i].handler() == handler)
+            {
+                playerString += "(you)";
+                playerString += "\n";
+            }
+            else
+            {
+                playerString += "\n";
+            }
+        }
+        
+        return playerString;
+    }
 
     private static void sendLocation(Game game, Socket handler, String data, String type)
     {
@@ -417,11 +460,11 @@ public class AsynchronousSocketListener
                 exists = true;
             }
             List<Player> players = games[i].players;
-            for (int m =0; m<players.Count;m++)
+            for (int m = 0; m < players.Count; m++)
             {
                 if (players[i].handler() == handler)
                 {
-                    Send(handler, "err You are already hosting a game!<EOF>");
+                    Send(handler, "err You are already in a game!<EOF>");
                     exists = true;
                 }
             }
@@ -458,62 +501,40 @@ public class AsynchronousSocketListener
             SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
             command.ExecuteNonQuery();
         }
-        //        if ((games.Count==0)&& (addedPlayer==false)) //if no games are initialized
-        //        {
-        //            games.Add(new Game(handler,username));
-        //            times++;
-        //            Console.WriteLine(times.ToString());
-        //            addedPlayer = true;
-        //        }
-        //        else if (addedPlayer==false)//if there are initialized games
-        //        {
-        //            /*For all initialized games, look for ones that aren't full. 
-        //             Add player if a non-full game is found*/
-        //            for (int i = 0; i < games.Count; i++)
-        //            {
-        //                if (games[i].isGameNotFull())
-        //                {
-        //                    games[i].addPlayer(handler,username);
-        //                    addedPlayer = true;
-        //                    if (games[i].isGameFull())
-        //                    {
-        //                       //addMessageToAllPlayers(games[i], "sta<EOF>");
-        //                       SendToAllPlayers(games[i].players, "sta<EOF>");
-        //                       for (int j = 0; j < games[i].players.Count; j++)
-        //                       {
-        //                           if (games[i].players[j].handler() != handler)
-        //                           {
-        //                               String message = "opp " + games[i].players[j].getPlayerName() + "<EOF>";
-        //                               Console.WriteLine(message);
-        //                               games[i].players[i].addMessage( message);
-        //                           }
-        //                       }
-        //                    }
-        //                }
-        //            }
 
-        //            /*if there are no empty/nonfull games, create a new one for this player*/
-        //            if (addedPlayer == false)
-        //            {
-        //                games.Add(new Game(handler,username));
-
-        //                times++;
-        //                Console.WriteLine(times.ToString());
-
-        //                addedPlayer = true;
-        //            }
-        //        }
-
-
-        //        loggedInSuccessfully = false;
-        //        addedPlayer = false;
-        //    }
-        //}
     }
     private static void join(Socket handler, String gameName)
     //opens database connection, check if gamename exists, add player to game if game exists, else send message to 
     //client that the game doesn't exist. 
     {
+
+        for (int i = 0; i < games.Count; i++)
+        {
+            for (int m = 0; m < games[i].players.Count; m++)
+            {
+                if (games[i].players[m].handler() == handler)
+                {
+                    Send(handler, "err You are already in a game<EOF>");
+                    return;
+                }
+            }
+        }
+
+
+        for (int i = 0; i < games.Count; i++)
+        {
+            if (games[i].getGameName() == gameName)
+            {
+                if (games[i].isGameNotFull())
+                {
+                    games[i].addPlayer(handler, username);
+                    Send(handler, "joi <EOF>");
+                    return;
+                }
+            }
+        }
+        Send(handler, "err Game name does not exist.<EOF>");
+
         //        if ((games.Count==0)&& (addedPlayer==false)) //if no games are initialized
         //        {
         //            games.Add(new Game(handler,username));

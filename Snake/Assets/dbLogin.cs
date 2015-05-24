@@ -33,6 +33,10 @@ public class dbLogin : MonoBehaviour {
 	private static string errorMessage = "";
 	// private static bool responseRead = true;
 
+	private static bool goToGameRoom = false;
+	private static bool gotMembers = false;
+	private static string playerNames = "";
+
 	public string getUser() {
 		return username;
 	}
@@ -201,10 +205,23 @@ public class dbLogin : MonoBehaviour {
 			player2Obj.transform.position=new Vector3 (p2x,p2y,0);
 			p2updated=false;
 		}
+
+		if ((goToGameRoom) && (Application.loadedLevelName != "Game Room")) {
+			Application.LoadLevelAsync("Game Room");
+		}
+
+
 		if (Application.loadedLevelName=="Lobby") {
 
 			openGames = GameObject.Find("Open Game List").GetComponent<Text>();
 			openGames.text = listOfGames;
+		}
+
+		if (gotMembers) {
+			Text membersList = GameObject.Find ("Players").GetComponent<Text>();
+			membersList.text = playerNames;
+			gotMembers=false;
+
 		}
 
 		if (errorMessage != "") {
@@ -366,6 +383,17 @@ public class dbLogin : MonoBehaviour {
 						listOfGames = "Open Game Names: "+ response.Substring(4,response.Length-9);
 
 					}
+					else if (response.Substring(0,3) == "joi")
+					{
+						goToGameRoom = true;
+					}
+					else if (response.Substring(0,3) == "mem")
+					{
+						gotMembers = true;
+						playerNames = response.Substring(4, response.Length-9);
+					}
+
+
 					else if (response.Substring(0,3)=="err")
 					{
 						errorMessage = response.Substring(4,response.Length-9);

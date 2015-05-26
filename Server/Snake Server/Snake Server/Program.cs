@@ -346,15 +346,16 @@ public class AsynchronousSocketListener
                         games.Remove(games[gameNum]);
 
                         // Remove the game from the database of active games
-                        string query = "SELECT gameid FROM tb_games WHERE gameid = '" + gameNum + "'";
+                        string query = "SELECT gameid FROM tb_games WHERE gameid = " + gameNum;
                         SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
                         SQLiteDataReader reader = command.ExecuteReader();
                         if (reader.Read())
                         {
-                            query = "DELETE FROM tb_games WHERE gameid = '" + gameNum + "'";
+                            query = "DELETE FROM tb_games WHERE gameid = " + gameNum;
                             SQLiteCommand command2 = new SQLiteCommand(query, m_dbConnection);
                             command2.ExecuteNonQuery();
                         }
+                        reader.Close();
                     }
                 }
 
@@ -525,11 +526,16 @@ public class AsynchronousSocketListener
 
             // Also make sure to add it to the database with the current player as player1
 
-            //Kathy, i kept getting errors about primary keys not being unique. I commented this out to make sure game works - Victor
-
-            //string query = "INSERT INTO tb_games (gameid, gameName, player1) VALUES ('" + (games.Count - 1) + "', '" + gameName + "', '" + player1 + "')";
-            //SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
-            //command.ExecuteNonQuery();
+            try
+            {
+                string query = "INSERT INTO tb_games (gameid, gameName, player1) VALUES (" + (games.Count - 1) + ", '" + gameName + "', '" + player1 + "')";
+                SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
         }
 
     }
@@ -555,14 +561,40 @@ public class AsynchronousSocketListener
         // If there is this game name and game is not full. add player to that game.
         for (int i = 0; i < games.Count; i++)
         {
+            string player1 = "";
+            string player2 = username;
+
             if (games[i].getGameName() == gameName)
             {
                 if (games[i].isGameNotFull())
                 {
                     games[i].addPlayer(handler, username);
                     playerNames += username;
+
+                    try
+                    {
+                        string query = "UPDATE tb_games SET player2 = '" + username + "' WHERE gameid = " + i;
+                        SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
+                        command.ExecuteNonQuery();
+                        query = "SELECT player1 FROM tb_games WHERE gameid = " + i;
+                        command = new SQLiteCommand(query, m_dbConnection);
+                        SQLiteDataReader reader = command.ExecuteReader();
+                        if (reader.Read())
+                        {
+                            player1 = "" + reader["player1"];
+                        }
+                        reader.Close();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.ToString());
+                    }
                     
-                    Send(handler, "joi <EOF>");
+                    Send(handler, "joi<EOF>");
+
+                    // Now there are two players -- tell the clients to start the game!
+                    SendToAllPlayers(games[i].players, "sta " + player1 + "," + player2 + "<EOF>");
+
                     return;
                 }
                 

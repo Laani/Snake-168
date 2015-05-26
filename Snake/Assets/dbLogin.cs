@@ -203,7 +203,7 @@ public class dbLogin : MonoBehaviour {
 			Application.LoadLevelAsync("Lobby");
 			stopped = false;
 		}
-		if ((gameStarted)&& (Application.loadedLevel!=2)) {
+		if ((gameStarted)&& (Application.loadedLevel != 2)) {
 			Application.LoadLevelAsync("Main");
 		}
 		if (p1updated)
@@ -247,7 +247,7 @@ public class dbLogin : MonoBehaviour {
 //		}
 
 		
-		if ((gotMembers)&& (Application.loadedLevelName=="LobbyEnter") ){
+		if ((gotMembers) && (Application.loadedLevelName=="LobbyEnter") ){
 			lobbyName=GameObject.Find("GameName").GetComponent<Text>();
 			lobbyName.text = myGameName;
 			Text membersList = GameObject.Find ("Players").GetComponent<Text>();
@@ -346,7 +346,17 @@ public class dbLogin : MonoBehaviour {
 					}
 					else if (response.Substring(0,3) == "sta")
 					{
-						gameStarted = true;
+						Debug.Log ("received: " + response);
+						if (playerNum == 1) {
+							username = response.Substring (4, response.IndexOf(",") - 4);
+							opponent = response.Substring (response.IndexOf (",") + 1);
+						}
+						else if (playerNum == 2) {
+							username = response.Substring (response.IndexOf (",") + 1);
+							opponent = response.Substring (4, response.IndexOf(",") - 4);
+						}
+						Debug.Log ("username: " + username + " | opponent: " + opponent);
+						//gameStarted = true;
 						Send (client, "ackn<EOF>");
 						//Application.LoadLevel("Main");
 					}else if (response.Substring(0,3) == "one")
@@ -401,11 +411,11 @@ public class dbLogin : MonoBehaviour {
 						Send (client, "ackn<EOF>");
 
 
-					} else if (response.Substring(0, 3) == "opp") {
-						opponent = response.Substring(4, response.Length - 9);
-						Debug.Log ("opponent's name received: " + opponent);
-						Send (client, "ackn<EOF>");
-					} else if (response.Substring(0, 3) == "sco") {
+					} //else if (response.Substring(0, 3) == "opp") {
+					//	opponent = response.Substring(4, response.Length - 9);
+					//	Debug.Log ("opponent's name received: " + opponent);
+					//	Send (client, "ackn<EOF>"); }
+					else if (response.Substring(0, 3) == "sco") {
 						oscore = int.Parse(response.Substring (4, response.Length - 9));
 						Debug.Log ("opponent's score: " + oscore);
 						Send (client, "ackn<EOF>");
@@ -438,7 +448,6 @@ public class dbLogin : MonoBehaviour {
 						playerNames = response.Substring(4, response.Length-9);
 						Debug.Log(playerNames);
 					}
-
 
 					else if (response.Substring(0,3)=="err")
 					{

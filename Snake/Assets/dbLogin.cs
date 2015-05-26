@@ -16,6 +16,7 @@ public class dbLogin : MonoBehaviour {
 	public static string p2Pos;
 	public static string opponent;
 	public static int oscore=0;
+	private static string myGameName="";
 	static float p1x, p1y,p2x,p2y;
 	private Socket client;
 
@@ -39,6 +40,10 @@ public class dbLogin : MonoBehaviour {
 	private static bool gotMembers = false;
 	private static string playerNames = "";
 	private static bool someoneQuit = false;
+	private static bool enterLobby = false;
+	private static Text lobbyName;
+
+
 	public string getUser() {
 		return username;
 	}
@@ -53,6 +58,11 @@ public class dbLogin : MonoBehaviour {
 
 	public int getOscore() {
 		return oscore;
+	}
+
+	public void setGameName(string name)
+	{
+		myGameName = name;
 	}
 
 	public float getPos1(string type) {
@@ -213,10 +223,11 @@ public class dbLogin : MonoBehaviour {
 			someoneQuit = false;
 			
 		}	
-		if ((goToGameRoom) && (Application.loadedLevelName != "LobbyEnter")) {
+		if (((goToGameRoom) && (Application.loadedLevelName != "LobbyEnter"))|| (enterLobby)){
 			
 			Application.LoadLevelAsync("LobbyEnter");
-			
+			Send (client, "lobb<EOF>");
+			enterLobby=false;
 			//Application.LoadLevelAsync("Game Room"); // Wrong name? - william
 		}
 	
@@ -227,14 +238,18 @@ public class dbLogin : MonoBehaviour {
 			openGames = GameObject.Find("Open Game List").GetComponent<Text>();
 			openGames.text = listOfGames;
 		}
-		if (Application.loadedLevelName=="LobbyEnter"){
-			//someoneQuit = false; // If someone quit, this will be true and sent to someoneQuit
-			playerList = GameObject.Find("Players").GetComponent<Text>();
-			playerList.text = listOfPlayers;
-		}
+//		if (Application.loadedLevelName=="LobbyEnter"){
+//			//someoneQuit = false; // If someone quit, this will be true and sent to someoneQuit
+//
+//
+//			playerList = GameObject.Find("Players").GetComponent<Text>();
+//			playerList.text = listOfPlayers;
+//		}
 
 		
-		if (gotMembers) {
+		if ((gotMembers)&& (Application.loadedLevelName=="LobbyEnter") ){
+			lobbyName=GameObject.Find("GameName").GetComponent<Text>();
+			lobbyName.text = myGameName;
 			Text membersList = GameObject.Find ("Players").GetComponent<Text>();
 			membersList.text = playerNames;
 			gotMembers=false;
@@ -398,25 +413,30 @@ public class dbLogin : MonoBehaviour {
 					else if (response.Substring(0,3) == "ope")
 					{
 						listOfGames = "Open Games: "+ response.Substring(4,response.Length-9);
-
+						enterLobby = true;
+						Send (client, "lobb<EOF>");
 
 					}
 					else if (response.Substring(0,3) == "joi")
 					{
 						goToGameRoom = true;
+						Send (client, "lobb<EOF>");
 					}
 					else if (response.Substring(0,3) == "hos")
 					{
 						goToGameRoom = true;
+						Send (client, "lobb<EOF>");
 					}
 					else if (response.Substring(0,3) == "pla")
 					{
 						listOfPlayers += response.Substring(4, response.Length-9);
+
 					}
 					else if (response.Substring(0,3) == "mem")
 					{
 						gotMembers = true;
 						playerNames = response.Substring(4, response.Length-9);
+						Debug.Log(playerNames);
 					}
 
 

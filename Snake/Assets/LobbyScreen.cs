@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
@@ -17,6 +17,7 @@ public class LobbyScreen : MonoBehaviour {
 
 
 		x = GameObject.Find ("dbLogin").GetComponent<dbLogin>();
+
 	}
 	public void Refresh()
 	{
@@ -27,7 +28,10 @@ public class LobbyScreen : MonoBehaviour {
 	public void Host()
 	{
 		game = gameNameIF.text;
+		x.setGameName (game);
 		x.SendToServer("host " + game+"<EOF>");
+
+
 	}
 
 	public void Join()

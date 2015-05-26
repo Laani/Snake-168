@@ -316,7 +316,14 @@ public class AsynchronousSocketListener
                         }
                     }
                 }
-
+                //else if (content.Substring(0,4)=="name")
+                //{
+                //    int gameNum = findGameNumWithHandler(handler);
+                //    if (gameNum!=-1)
+                //    {
+                //        string gamePlayers = lobbyPlayers(games[gameNum], handler);
+                //    }
+                //}
                 else if (content.Substring(0, 4) == "quit")
                 {
                     // Remove the game from the server list
@@ -384,17 +391,33 @@ public class AsynchronousSocketListener
         }
     }
 
+    private static int findGameNumWithHandler(Socket handler)
+    {
+        for (int i = 0; i < games.Count; i++)
+        {
+            for (int m = 0; m < games[i].players.Count; m++)
+            {
+                if (games[i].players[m].handler() == handler)
+                {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
     private static string lobbyPlayers(Game game, Socket handler)
     {
         string playerString = "mem ";
         for (int i = 0; i < game.players.Count; i++)
         {
             playerString += game.players[i].getPlayerName() + " ";
-            if (game.players[i].getPlayerNum() == 1)
+            Console.WriteLine(game.players[i].getPlayerNum());
+            if (game.players[i].getPlayerNum() == 0)
             {
-                playerString += "(host)\n";
+                playerString += "(host) ";
             }
-            else if (game.players[i].handler() == handler)
+            if (game.players[i].handler() == handler)
             {
                 playerString += "(you)";
                 playerString += "\n";
@@ -439,6 +462,10 @@ public class AsynchronousSocketListener
                 Console.WriteLine("This player (not the sender) number is: " + (game.players[i].getPlayerNum() + 1));
                 String message = "p" + from.ToString() + header + " " + data + "<EOF>";
                 Console.WriteLine(message);
+                
+                string lobbyplayers = lobbyPlayers(game, handler);
+                game.players[i].addMessage(lobbyplayers);
+
                 Send(game.players[i].handler(), message);
                 //game.players[i].addMessage("p"+(i+1).ToString()+header+" "+data+"<EOF>"); 
             }
@@ -497,9 +524,12 @@ public class AsynchronousSocketListener
             Send(handler, gameNames);
 
             // Also make sure to add it to the database with the current player as player1
-            string query = "INSERT INTO tb_games (gameid, gameName, player1) VALUES ('" + (games.Count - 1) + "', '" + gameName + "', '" + player1 + "')";
-            SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
-            command.ExecuteNonQuery();
+
+            //Kathy, i kept getting errors about primary keys not being unique. I commented this out to make sure game works - Victor
+
+            //string query = "INSERT INTO tb_games (gameid, gameName, player1) VALUES ('" + (games.Count - 1) + "', '" + gameName + "', '" + player1 + "')";
+            //SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
+            //command.ExecuteNonQuery();
         }
 
     }

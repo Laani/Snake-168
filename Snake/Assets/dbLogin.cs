@@ -413,8 +413,8 @@ public class dbLogin : MonoBehaviour {
 					else if (response.Substring(0,3) == "ope")
 					{
 						listOfGames = "Open Games: "+ response.Substring(4,response.Length-9);
-						enterLobby = true;
-						Send (client, "lobb<EOF>");
+						//enterLobby = true;
+						//Send (client, "lobb<EOF>");
 
 					}
 					else if (response.Substring(0,3) == "joi")

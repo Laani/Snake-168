@@ -11,6 +11,7 @@ namespace Snake_Server
     {
         public List<Player> players= new List<Player>(); //players is an array of 2 Player objects.
         private int numOfPlayers = 0;
+        private int playersInLobby = 0;
         bool started = false;
         private String gameName;
         List<String> playerNum = new List<String>() { "one<EOF>", "two<EOF>", "three<EOF>", "four<EOF>" };
@@ -130,6 +131,14 @@ namespace Snake_Server
             return (numOfPlayers == 2);
         }
 
+        public int inLobby()
+        {
+            return playersInLobby;
+        }
 
+        public void addLobby()
+        {
+            playersInLobby++;
+        }
     }
 }

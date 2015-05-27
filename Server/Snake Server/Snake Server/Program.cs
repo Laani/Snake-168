@@ -315,26 +315,28 @@ public class AsynchronousSocketListener
                                 string player1 = "";
                                 string player2 = "";
 
-                                if (games[i].players.Count == 2)
-                                try
+                                if (games[i].inLobby() == 2)
                                 {
-                                    String query = "SELECT player1, player2 FROM tb_games WHERE gameid = " + i;
-                                    SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
-                                    SQLiteDataReader reader = command.ExecuteReader();
-                                    if (reader.Read())
+                                    try
                                     {
-                                        player1 = "" + reader["player1"];
-                                        player2 = "" + reader["player2"];
+                                        String query = "SELECT player1, player2 FROM tb_games WHERE gameid = " + i;
+                                        SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
+                                        SQLiteDataReader reader = command.ExecuteReader();
+                                        if (reader.Read())
+                                        {
+                                            player1 = "" + reader["player1"];
+                                            player2 = "" + reader["player2"];
+                                        }
+                                        reader.Close();
                                     }
-                                    reader.Close();
-                                }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine(e.ToString());
-                                }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine(e.ToString());
+                                    }
 
-                                // Now there are two players -- tell the clients to start the game!
-                                SendToAllPlayers(games[i].players, "sta " + player1 + "," + player2 + "<EOF>");
+                                    // Now there are two players -- tell the clients to start the game!
+                                    SendToAllPlayers(games[i].players, "sta " + player1 + "," + player2 + "<EOF>");
+                                }
                             }
                         }
                     }
@@ -559,6 +561,11 @@ public class AsynchronousSocketListener
             {
                 Console.WriteLine(e.ToString());
             }
+
+            // Join your own game
+
+            Send(handler, "joi<EOF>");
+            games[games.Count - 1].addLobby();
         }
 
     }
@@ -567,7 +574,7 @@ public class AsynchronousSocketListener
     //client that the game doesn't exist. 
     {
         string playerNames = "";
-        //If there are games, for the amount of players, if you are the handler, put yourself into the game.
+        /* //If there are games, for the amount of players, if you are the handler, put yourself into the game.
         for (int i = 0; i < games.Count; i++)
         {
             for (int m = 0; m < games[i].players.Count; m++)
@@ -579,14 +586,11 @@ public class AsynchronousSocketListener
                     return;
                 }
             }
-        }
+        } */
 
         // If there is this game name and game is not full. add player to that game.
         for (int i = 0; i < games.Count; i++)
         {
-            string player1 = "";
-            string player2 = username;
-
             if (games[i].getGameName() == gameName)
             {
                 if (games[i].isGameNotFull())
@@ -606,10 +610,10 @@ public class AsynchronousSocketListener
                     }
 
                     Send(handler, "joi<EOF>");
+                    games[i].addLobby();
 
                     return;
                 }
-
             }
         }
         Send(handler, "err Game name does not exist.<EOF>");

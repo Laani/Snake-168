@@ -224,12 +224,16 @@ public class dbLogin : MonoBehaviour {
 			someoneQuit = false;
 			
 		}	
-		if (((goToGameRoom) && (Application.loadedLevelName != "LobbyEnter"))|| (enterLobby)){
+		if (((goToGameRoom) && (Application.loadedLevelName != "LobbyEnter")) || (enterLobby)){
 			
 			Application.LoadLevelAsync("LobbyEnter");
 			Send (client, "lobb<EOF>");
-			enterLobby = false;
-			goToGameRoom = false;
+			if (enterLobby) {
+				enterLobby = false;
+			}
+			if (goToGameRoom) {
+				goToGameRoom = false;
+			}
 			//Application.LoadLevelAsync("Game Room"); // Wrong name? - william
 		}
 		if (Application.loadedLevelName=="Lobby") {
@@ -345,12 +349,12 @@ public class dbLogin : MonoBehaviour {
 					{
 						string responseCut = response.Substring(0, response.Length - 5);
 						if (playerNum == 1) {
-							username = responseCut.Substring (4, response.IndexOf(",") - 4);
-							opponent = responseCut.Substring (response.IndexOf (",") + 1);
+							username = responseCut.Substring (4, responseCut.IndexOf(",") - 4);
+							opponent = responseCut.Substring (responseCut.IndexOf (",") + 1);
 						}
 						else if (playerNum == 2) {
-							username = responseCut.Substring (response.IndexOf (",") + 1);
-							opponent = responseCut.Substring (4, response.IndexOf(",") - 4);
+							username = responseCut.Substring (responseCut.IndexOf (",") + 1);
+							opponent = responseCut.Substring (4, responseCut.IndexOf(",") - 4);
 						}
 						Debug.Log ("start game with username: " + username + " | opponent: " + opponent);
 						gameStarted = true;
@@ -426,13 +430,6 @@ public class dbLogin : MonoBehaviour {
 						Debug.Log ("Sent ackn to server.");
 					}
 					else if (response.Substring(0,3) == "joi")
-					{
-						goToGameRoom = true;
-						Send (client, "lobb<EOF>");
-						Send (client, "ackn<EOF>");
-						Debug.Log ("Sent ackn to server.");
-					}
-					else if (response.Substring(0,3) == "hos")
 					{
 						goToGameRoom = true;
 						Send (client, "lobb<EOF>");

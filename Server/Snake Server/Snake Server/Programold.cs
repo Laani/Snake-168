@@ -41,8 +41,6 @@ public class AsynchronousSocketListener
     public static SQLiteConnection m_dbConnection;
 
     static int times = 0;
-    
-
     public AsynchronousSocketListener()
     {
     }
@@ -149,21 +147,8 @@ public class AsynchronousSocketListener
                 // client. Display it on the console.
                 Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
                     content.Length, content);
-                Console.WriteLine("\n\n");
-                if ((content.IndexOf("user") != -1) && (content.IndexOf("pass") != -1))
-                {
-                    Console.WriteLine("Got a username and password in one message");
-                    int index = content.IndexOf("<EOF>");
-                    username = content.Substring(5, content.IndexOf("<EOF>") - 5);
-                    Console.WriteLine(username);
-                    password = content.Substring(content.IndexOf("pass")+5);
-                    password = password.Substring(0, password.Length - 5);
-                    Console.WriteLine(password);
+                // Console.WriteLine("\n\n");
 
-                    DbLogin(username, password, handler);
-                    players.Add(new Player(handler, username));
-                }
-                else 
                 if (content.Substring(0, 4) == "user")
                 {
                     Console.WriteLine("Got a username");
@@ -177,9 +162,6 @@ public class AsynchronousSocketListener
                     DbLogin(username, password, handler);
                     players.Add(new Player(handler, username));
                 }
-                
-
-
                 else if (content.Substring(0, 4) == "ackn")
                 {
                     Console.WriteLine("ackn received");

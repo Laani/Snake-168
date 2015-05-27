@@ -311,7 +311,30 @@ public class AsynchronousSocketListener
                             {
                                 string members = lobbyPlayers(games[i], handler);
                                 Send(handler, members + "<EOF>");
-                                
+
+                                string player1 = "";
+                                string player2 = "";
+
+                                if (games[i].players.Count == 2)
+                                try
+                                {
+                                    String query = "SELECT player1, player2 FROM tb_games WHERE gameid = " + i;
+                                    SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
+                                    SQLiteDataReader reader = command.ExecuteReader();
+                                    if (reader.Read())
+                                    {
+                                        player1 = "" + reader["player1"];
+                                        player2 = "" + reader["player2"];
+                                    }
+                                    reader.Close();
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine(e.ToString());
+                                }
+
+                                // Now there are two players -- tell the clients to start the game!
+                                SendToAllPlayers(games[i].players, "sta " + player1 + "," + player2 + "<EOF>");
                             }
                         }
                     }
@@ -428,7 +451,7 @@ public class AsynchronousSocketListener
                 playerString += "\n";
             }
         }
-        
+
         return playerString;
     }
 
@@ -463,7 +486,7 @@ public class AsynchronousSocketListener
                 Console.WriteLine("This player (not the sender) number is: " + (game.players[i].getPlayerNum() + 1));
                 String message = "p" + from.ToString() + header + " " + data + "<EOF>";
                 Console.WriteLine(message);
-                
+
                 string lobbyplayers = lobbyPlayers(game, handler);
                 game.players[i].addMessage(lobbyplayers);
 
@@ -576,28 +599,17 @@ public class AsynchronousSocketListener
                         string query = "UPDATE tb_games SET player2 = '" + username + "' WHERE gameid = " + i;
                         SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
                         command.ExecuteNonQuery();
-                        query = "SELECT player1 FROM tb_games WHERE gameid = " + i;
-                        command = new SQLiteCommand(query, m_dbConnection);
-                        SQLiteDataReader reader = command.ExecuteReader();
-                        if (reader.Read())
-                        {
-                            player1 = "" + reader["player1"];
-                        }
-                        reader.Close();
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine(e.ToString());
                     }
-                    
-                    Send(handler, "joi<EOF>");
 
-                    // Now there are two players -- tell the clients to start the game!
-                    SendToAllPlayers(games[i].players, "sta " + player1 + "," + player2 + "<EOF>");
+                    Send(handler, "joi<EOF>");
 
                     return;
                 }
-                
+
             }
         }
         Send(handler, "err Game name does not exist.<EOF>");

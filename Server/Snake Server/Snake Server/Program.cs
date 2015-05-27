@@ -405,7 +405,7 @@ public class AsynchronousSocketListener
                 // Echo the data back to the client.
                 // Send(handler, "[ECHO] " + content + "<EOF>");
 
-                // Setup a new state object
+                // Setu a new state object
                 StateObject newstate = new StateObject();
                 newstate.workSocket = handler;
 
@@ -507,8 +507,8 @@ public class AsynchronousSocketListener
                 String message = "p" + from.ToString() + header + " " + data + "<EOF>";
                 Console.WriteLine(message);
 
-                string lobbyplayers = lobbyPlayers(game, handler);
-                game.players[i].addMessage(lobbyplayers);
+                //string lobbyplayers = lobbyPlayers(game, handler);
+                //game.players[i].addMessage(lobbyplayers);
 
                 Send(game.players[i].handler(), message);
                 //game.players[i].addMessage("p"+(i+1).ToString()+header+" "+data+"<EOF>"); 

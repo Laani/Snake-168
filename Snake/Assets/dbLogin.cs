@@ -42,7 +42,8 @@ public class dbLogin : MonoBehaviour {
 	private static bool someoneQuit = false;
 	private static bool enterLobby = false;
 	private static Text lobbyName;
-
+	private static bool sendPass = false;
+	private static string password = "";
 
 	public string getUser() {
 		return username;
@@ -66,8 +67,8 @@ public class dbLogin : MonoBehaviour {
 	}
 
 	public float getPos1(string type) {
-		//string x = p1Pos.Substring (p1Pos.IndexOf (' ') + 1, p1Pos.IndexOf(',') - (p1Pos.IndexOf(' ') + 1));
-		//string y = p1Pos.Substring(p1Pos.IndexOf (',') + 1, p1Pos.IndexOf('<') - (p1Pos.IndexOf(',') + 1));
+//		string x = p1Pos.Substring (p1Pos.IndexOf (' ') + 1, p1Pos.IndexOf(',') - (p1Pos.IndexOf(' ') + 1));
+//		string y = p1Pos.Substring(p1Pos.IndexOf (',') + 1, p1Pos.IndexOf('<') - (p1Pos.IndexOf(',') + 1));
 		if (type == "x") {
 			return p1x;
 		} else
@@ -75,8 +76,8 @@ public class dbLogin : MonoBehaviour {
 	}
 
 	public float getPos2(string type) {
-		//string x = p2Pos.Substring (p2Pos.IndexOf (' ') + 1, p2Pos.IndexOf(',') - (p2Pos.IndexOf(' ') + 1));
-		//string y = p2Pos.Substring(p2Pos.IndexOf (',') + 1, p2Pos.IndexOf('<') - (p2Pos.IndexOf(',') + 1));
+//		string x = p2Pos.Substring (p2Pos.IndexOf (' ') + 1, p2Pos.IndexOf(',') - (p2Pos.IndexOf(' ') + 1));
+//		string y = p2Pos.Substring(p2Pos.IndexOf (',') + 1, p2Pos.IndexOf('<') - (p2Pos.IndexOf(',') + 1));
 		if (type == "x") {
 			return p2x;
 		} else
@@ -172,16 +173,16 @@ public class dbLogin : MonoBehaviour {
 		
 		GameObject passwordGO = GameObject.Find ("Password");
 		InputField passwordIF = passwordGO.GetComponent<InputField> ();
-		string password = passwordIF.text;
+		password = passwordIF.text;
 
 		// Encrypt the password
 
 		password = Md5Sum (password);
 		
 		// Send test data to the remote device.
-		
 		Send (client, "user " + username + "<EOF>");
-		Send (client, "pass " + password + "<EOF>");
+		sendPass= true;
+
 	}
 			
 		// Release the socket.
@@ -196,6 +197,11 @@ public class dbLogin : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+		if (sendPass) {
+			Send (client, "pass " + password + "<EOF>");
+			sendPass = false;
+		}
+			
 		if (client != null && !stopped) {
 			Receive (client);
 		}
@@ -211,6 +217,10 @@ public class dbLogin : MonoBehaviour {
 		if (p1updated)
 		{
 			GameObject player1Obj = GameObject.Find("Player1");
+			if (player1Obj==null)
+			{
+				Debug.Log("player1 object not found.");
+			}
 			player1Obj.transform.position= new Vector3(p1x,p1y,0);
 			p1updated = false;
 		}
@@ -318,18 +328,18 @@ public class dbLogin : MonoBehaviour {
 
 				response = state.sb.ToString();
 				Debug.Log("response before parsing: "+response);
-				Debug.Log ("<EOF> found in "+response+" is "+(response.IndexOf("<EOF>")>-1).ToString());
+				//Debug.Log ("<EOF> found in "+response+" is "+(response.IndexOf("<EOF>")>-1).ToString());
 
 				if (response.IndexOf("<EOF>") > -1) 
 				{
-					Debug.Log (response);
+					//Debug.Log (response);
 					Debug.Log ("Response received: " + response.Substring(0, response.Length - 5));
 
 					if (response.Substring(0, 3) == "log") 
 					{
 						Debug.Log (username + " has logged in successfully.");
-						//Send (client, "ackn<EOF>");
-						//Debug.Log ("Sent ackn to server.");
+						Send (client, "ackn<EOF>");
+						Debug.Log ("Sent ackn to server.");
 						/*try {
 							client.Shutdown(SocketShutdown.Both);
 						}
@@ -348,37 +358,38 @@ public class dbLogin : MonoBehaviour {
 					}
 					else if (response.Substring(0,3) == "sta")
 					{
-						string responseCut = response.Substring(0, response.Length - 5);
+						string responseCut = response.Substring(4);
+						responseCut = responseCut.Replace ("<EOF>", "");
 						if (playerNum == 1) {
-							username = responseCut.Substring (4, responseCut.IndexOf(",") - 4);
+							username = responseCut.Substring (0, responseCut.IndexOf(","));
 							opponent = responseCut.Substring (responseCut.IndexOf (",") + 1);
 						}
 						else if (playerNum == 2) {
+							opponent = responseCut.Substring (0, responseCut.IndexOf(","));
 							username = responseCut.Substring (responseCut.IndexOf (",") + 1);
-							opponent = responseCut.Substring (4, responseCut.IndexOf(",") - 4);
 						}
 						Debug.Log ("start game with username: " + username + " | opponent: " + opponent);
 						gameStarted = true;
-						//Send (client, "ackn<EOF>");
+						Send (client, "ackn<EOF>");
 						//Application.LoadLevel("Main");
 					}else if (response.Substring(0,3) == "one")
 					{
 						Debug.Log ("you are player one");
 						playerNum=1;
-						//Send (client, "ackn<EOF>");
+						Send (client, "ackn<EOF>");
 						//Application.LoadLevel("Main");
 					}else if (response.Substring(0,3) == "two")
 					{
 						Debug.Log ("you are player two");
 						playerNum=2;
-						//Send (client, "ackn<EOF>");
+						Send (client, "ackn<EOF>");
 						//Application.LoadLevel("Main");
 					}else if (response.Substring(0, 3) == "p1h")
 					{
 
 						Debug.Log ("p1h read");
 						Debug.Log(response);
-						p1Pos = response.Substring (4, response.Length - 9);
+						p1Pos = response.Substring (4, 5);
 						String p1posx = p1Pos.Substring(0,p1Pos.IndexOf(","));
 						String p1posy = p1Pos.Substring(p1Pos.IndexOf(",")+1);
 						Debug.Log (p1posx);
@@ -389,18 +400,18 @@ public class dbLogin : MonoBehaviour {
 						dbLogin.p1y = float.Parse(p1posy);
 
 						p1updated = true;
-						//Send (client, "ackn<EOF>");
+						Send (client, "ackn<EOF>");
 
 					}else if (response.Substring(0, 3) == "p2h")
 					{
-//						Debug.Log ("p2h read");
-						p2Pos = response.Substring (4, response.Length - 9);
+						Debug.Log ("p2h read");
+						p2Pos = response.Substring (4, 5);
 						//Debug.Log ("p2h"+p2Pos);
 						String p2posx = p2Pos.Substring(0,p2Pos.IndexOf(","));
 						String p2posy = p2Pos.Substring(p2Pos.IndexOf(",")+1);
-//						Debug.Log("player 2 location:");
-//						Debug.Log(p2posx);
-//						Debug.Log(p2posy);
+						Debug.Log("player 2 location:");
+						Debug.Log(p2posx);
+						Debug.Log(p2posy);
 						dbLogin.p2x = float.Parse(p2posx);
 						dbLogin.p2y = float.Parse(p2posy);
 						
@@ -410,7 +421,7 @@ public class dbLogin : MonoBehaviour {
 //						
 //						float player2ObjX = player2Obj.transform.position.x;
 //						float player2ObjY = player2Obj.transform.position.y;
-						//Send (client, "ackn<EOF>");
+						Send (client, "ackn<EOF>");
 
 
 					} //else if (response.Substring(0, 3) == "opp") {
@@ -420,36 +431,65 @@ public class dbLogin : MonoBehaviour {
 					else if (response.Substring(0, 3) == "sco") {
 						oscore = int.Parse(response.Substring (4, response.Length - 9));
 						Debug.Log ("opponent's score: " + oscore);
-						//Send (client, "ackn<EOF>");
+						Send (client, "ackn<EOF>");
 					}
 					else if (response.Substring(0,3) == "ope")
 					{
 						listOfGames = "Open Games: "+ response.Substring(4,response.Length-9);
 						//enterLobby = true;
 						//Send (client, "lobb<EOF>");
-						//Send (client, "ackn<EOF>");
+						Send (client, "ackn<EOF>");
 						Debug.Log ("Sent ackn to server.");
 					}
 					else if (response.Substring(0,3) == "joi")
 					{
 						goToGameRoom = true;
 						Send (client, "lobb<EOF>");
-						//Send (client, "ackn<EOF>");
-						//Debug.Log ("Sent ackn to server.");
+						Send (client, "ackn<EOF>");
+						Debug.Log ("Sent ackn to server.");
 					}
 					else if (response.Substring(0,3) == "pla")
 					{
 						listOfPlayers += response.Substring(4, response.Length-9);
-						//Send (client, "ackn<EOF>");
-						//Debug.Log ("Sent ackn to server.");
+						Send (client, "ackn<EOF>");
+						Debug.Log ("Sent ackn to server.");
 					}
 					else if (response.Substring(0,3) == "mem")
 					{
 						gotMembers = true;
-						playerNames = response.Substring(4, response.Length-9);
+						int index = response.IndexOf ("<EOF>");
+						playerNames = response.Substring(0, index);
+						playerNames = playerNames.Replace ("mem ","");
 						Debug.Log(playerNames);
-						//Send (client, "ackn<EOF>");
-						//Debug.Log ("Sent ackn to server.");
+						Send (client, "ackn<EOF>");
+						Debug.Log ("Sent ackn to server.");
+
+						// After "mem" is finished, check if ">sta " is in the original message
+						if (response.Contains (">sta "))
+						{
+							// Create a staSection which separates the mem part
+							string staSection = response.Substring (index);
+							// Trim it so that it ends at the first <EOF> (assuming there might be other crap behind it)
+							staSection = staSection.Substring (0, staSection.IndexOf ("<EOF>"));
+
+							// Same implementation as the "sta" section above. Copy-pasted.
+							string responseCut = staSection.Substring(4);
+							responseCut = responseCut.Replace ("<EOF>", "");
+							if (playerNum == 1) {
+								username = responseCut.Substring (0, responseCut.IndexOf(","));
+								opponent = responseCut.Substring (responseCut.IndexOf (",") + 1);
+							}
+							else if (playerNum == 2) {
+								opponent = responseCut.Substring (0, responseCut.IndexOf(","));
+								username = responseCut.Substring (responseCut.IndexOf (",") + 1);
+							}
+							Debug.Log ("start game with username: " + username + " | opponent: " + opponent);
+							gameStarted = true;
+							Send (client, "ackn<EOF>");
+						}
+
+
+
 					}
 
 					else if (response.Substring(0,3)=="err")
@@ -462,7 +502,7 @@ public class dbLogin : MonoBehaviour {
 						//Application.LoadLevelAsync("Lobby"); //This doesn't work here, have to be called in update()
 						someoneQuit = true;
 						goToGameRoom = false;
-						//Send (client, "ackn<EOF>");
+						Send (client, "ackn<EOF>");
 					}
 
 
@@ -492,6 +532,7 @@ public class dbLogin : MonoBehaviour {
 	
 	public static void Send(Socket client, String data) {
 		// Convert the string data to byte data using ASCII encoding.
+		Debug.Log ("sending " + data + " to server");
 		byte[] byteData = Encoding.ASCII.GetBytes(data);
 		
 		// Begin sending the data to the remote device.
@@ -503,10 +544,10 @@ public class dbLogin : MonoBehaviour {
 		try {
 			// Retrieve the socket from the state object.
 			Socket client = (Socket) ar.AsyncState;
-			
+
 			// Complete sending the data to the remote device.
 			int bytesSent = client.EndSend(ar);
-			Debug.Log("Sent " + bytesSent + " bytes to the server.");
+			//Debug.Log("Sent " + bytesSent + " bytes to the server.");
 		} catch (Exception e) {
 			Debug.Log(e.ToString());
 		}

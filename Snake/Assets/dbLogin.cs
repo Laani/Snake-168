@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System;
 using System.Net;
@@ -355,50 +355,73 @@ public class dbLogin : MonoBehaviour {
 						}
 						client.Close(); */
 						stopped = true;
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
 
 
-					} else if (response.Substring (0,3) == "wro") {
+					} 
+					if (response.Substring (0,3) == "wro") {
 						Debug.Log("You have entered the wrong password for " + username + ". Please try again.");
-					} else if (response.Substring(0, 3) == "reg") {
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
+					}
+					if (response.Substring(0, 3) == "reg") {
 						Debug.Log(username + " has been registered.");
 						stopped = true;
+
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
 					}
-					else if ((response.Substring(0,3) == "cha"))
+					if (response.Substring(0,3) == "ope")
+					{
+						listOfGames = "Open Games: "+ response.Substring(4,response.Length-9);
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
+						//enterLobby = true;
+						//Send (client, "lobb<EOF>");
+						//Send (client, "ackn<EOF>");
+						//Debug.Log ("Sent ackn to server.");
+					}
+					if (response.Substring(0,3) == "joi")
+					{
+						goToGameRoom = true;
+						Send (client, "lobb<EOF>");
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
+						//Send (client, "ackn<EOF>");
+						//Debug.Log ("Sent ackn to server.");
+					}
+					if (response.Substring(0,3) == "one")
+					{
+						Debug.Log ("you are player one");
+						playerNum=1;
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
+						//Send (client, "ackn<EOF>");
+						//Application.LoadLevel("Main");
+					}
+					if (response.Substring(0,3) == "two")
+					{
+						Debug.Log ("you are player two");
+						playerNum=2;
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
+						//Send (client, "ackn<EOF>");
+						//Application.LoadLevel("Main");
+					}
+					if ((response.Substring(0,3) == "cha"))
 					{
 						Debug.Log("received chat update");
 
 						chatbox= response.Substring(4,response.Length-9);
+
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
+
 					}
 
-					else if (response.Substring(0,3) == "sta")
-					{
-						string responseCut = response.Substring(4);
-						responseCut = responseCut.Replace ("<EOF>", "");
-						if (playerNum == 1) {
-							username = responseCut.Substring (0, responseCut.IndexOf(","));
-							opponent = responseCut.Substring (responseCut.IndexOf (",") + 1);
-						}
-						else if (playerNum == 2) {
-							opponent = responseCut.Substring (0, responseCut.IndexOf(","));
-							username = responseCut.Substring (responseCut.IndexOf (",") + 1);
-						}
-						Debug.Log ("start game with username: " + username + " | opponent: " + opponent);
-						gameStarted = true;
-						//Send (client, "ackn<EOF>");
-						//Application.LoadLevel("Main");
-					}else if (response.Substring(0,3) == "one")
-					{
-						Debug.Log ("you are player one");
-						playerNum=1;
-						//Send (client, "ackn<EOF>");
-						//Application.LoadLevel("Main");
-					}else if (response.Substring(0,3) == "two")
-					{
-						Debug.Log ("you are player two");
-						playerNum=2;
-						//Send (client, "ackn<EOF>");
-						//Application.LoadLevel("Main");
-					}else if (response.Substring(0, 3) == "p1h")
+
+					if (response.Substring(0, 3) == "p1h")
 					{
 
 						Debug.Log ("p1h read");
@@ -414,9 +437,13 @@ public class dbLogin : MonoBehaviour {
 						dbLogin.p1y = float.Parse(p1posy);
 
 						p1updated = true;
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
 						//Send (client, "ackn<EOF>");
 
-					}else if (response.Substring(0, 3) == "p2h")
+					
+					}
+					if (response.Substring(0, 3) == "p2h")
 					{
 						Debug.Log ("p2h read");
 						p2Pos = response.Substring (4, 5);
@@ -430,6 +457,8 @@ public class dbLogin : MonoBehaviour {
 						dbLogin.p2y = float.Parse(p2posy);
 						
 						p2updated = true;
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
 						//Snake snakeManager = GameObject.Find("Snake").GetComponent<Snake>();
 //						GameObject player2Obj = GameObject.Find("Player2");
 //						
@@ -442,55 +471,69 @@ public class dbLogin : MonoBehaviour {
 					//	opponent = response.Substring(4, response.Length - 9);
 					//	Debug.Log ("opponent's name received: " + opponent);
 					//	Send (client, "ackn<EOF>"); }
-					else if (response.Substring(0, 3) == "sco") {
+					if (response.Substring(0, 3) == "sco") {
 						oscore = int.Parse(response.Substring (4, response.Length - 9));
 						Debug.Log ("opponent's score: " + oscore);
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
 						//Send (client, "ackn<EOF>");
 					}
-					else if (response.Substring(0,3) == "ope")
-					{
-						listOfGames = "Open Games: "+ response.Substring(4,response.Length-9);
-						//enterLobby = true;
-						//Send (client, "lobb<EOF>");
-						//Send (client, "ackn<EOF>");
-						//Debug.Log ("Sent ackn to server.");
-					}
-					else if (response.Substring(0,3) == "joi")
-					{
-						goToGameRoom = true;
-						Send (client, "lobb<EOF>");
-						//Send (client, "ackn<EOF>");
-						//Debug.Log ("Sent ackn to server.");
-					}
-					else if (response.Substring(0,3) == "pla")
+
+					if (response.Substring(0,3) == "pla")
 					{
 						listOfPlayers += response.Substring(4, response.Length-9);
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
 						//Send (client, "ackn<EOF>");
 						//Debug.Log ("Sent ackn to server.");
 					}
-					else if (response.Substring(0,3) == "mem")
+					if (response.Substring(0,3) == "mem")
 					{
 						gotMembers = true;
 						int index = response.IndexOf ("<EOF>");
 						playerNames = response.Substring(0, index);
+						response = response.Replace(playerNames + "<EOF>", "");
 						playerNames = playerNames.Replace ("mem ","");
-                        response = response.Replace(playerNames + "<EOF>", "");
+                        
 						Debug.Log(playerNames);
 						Send (client, "ackn<EOF>");
 						Debug.Log ("Sent ackn to server.");
-						
+					}
+					
+					if (response.Substring(0,3) == "sta")
+					{
+						string responseCut = response.Substring(4);
+						responseCut = responseCut.Replace ("<EOF>", "");
+						if (playerNum == 1) {
+							username = responseCut.Substring (0, responseCut.IndexOf(","));
+							opponent = responseCut.Substring (responseCut.IndexOf (",") + 1);
+						}
+						else if (playerNum == 2) {
+							opponent = responseCut.Substring (0, responseCut.IndexOf(","));
+							username = responseCut.Substring (responseCut.IndexOf (",") + 1);
+						}
+						Debug.Log ("start game with username: " + username + " | opponent: " + opponent);
+						gameStarted = true;
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
+						//Send (client, "ackn<EOF>");
+						//Application.LoadLevel("Main");
 					}
 
-					else if (response.Substring(0,3)=="err")
+					if (response.Substring(0,3)=="err")
 					{
 						errorMessage = response.Substring(4,response.Length-9);
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
 					}
-					else if (response.Substring(0,3) == "qui")
+					if (response.Substring(0,3) == "qui")
 					{
 						Debug.Log("opponent disconnected. gg no re");
 						//Application.LoadLevelAsync("Lobby"); //This doesn't work here, have to be called in update()
 						someoneQuit = true;
 						goToGameRoom = false;
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
 						//Send (client, "ackn<EOF>");
 					}
 					// After "mem" is finished, check if ">sta " is in the original message
@@ -517,6 +560,8 @@ public class dbLogin : MonoBehaviour {
 						Debug.Log("start game with username: " + username + " | opponent: " + opponent);
 						gameStarted = true;
 						Send(client, "ackn<EOF>");
+						string msg = response.Substring (0, response.IndexOf("<EOF>"));
+						response = response.Replace(msg+"<EOF>","");
 					}
 
 					//state.sb = new StringBuilder(); // Victor told me to  comment this out - William

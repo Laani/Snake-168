@@ -3,11 +3,13 @@ using System.Collections;
 using UnityEngine.UI;
 public class ChatSend : MonoBehaviour {
 	dbLogin x;
-	GameObject chatbox;
+	InputField chatbox;
 	static Text chatboxText;
 	// Use this for initialization
 	void Start () {
 		x = GameObject.Find ("dbLogin").GetComponent<dbLogin> ();
+		chatbox = GameObject.Find ("ChatInput").GetComponent<InputField> ();
+		chatbox.ActivateInputField ();
 		chatboxText = GameObject.Find ("ChatBox").GetComponent<Text> ();
 	}
 	

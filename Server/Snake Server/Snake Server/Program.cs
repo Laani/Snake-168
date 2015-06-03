@@ -477,7 +477,7 @@ public class AsynchronousSocketListener
         for (int i = 0; i < game.players.Count; i++)
         {
             playerString += game.players[i].getPlayerName() + " ";
-            Console.WriteLine(game.players[i].getPlayerNum());
+            Console.WriteLine(game.players[i].getPlayerName());
             if (game.players[i].getPlayerNum() == 0)
             {
                 playerString += "(host) ";
@@ -549,12 +549,11 @@ public class AsynchronousSocketListener
             {
                 Send(handler, "err Game name already in use!<EOF>"); // doesn't make game cause game name exists
                 return;
-                exists = true;
             }
             List<Player> players = games[i].players;
             for (int m = 0; m < players.Count; m++)
             {
-                if (players[i].handler() == handler)
+                if (players[m].handler() == handler)
                 {
                     Send(handler, "err You are already hosting a game!<EOF>"); //changed 'in a game' to 'hosting' - William
                     exists = true;

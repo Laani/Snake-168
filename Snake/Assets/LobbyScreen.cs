@@ -14,7 +14,7 @@ public class LobbyScreen : MonoBehaviour {
 	{
 		gameName = GameObject.Find ("GameName");
 		gameNameIF = gameName.GetComponent<InputField> ();
-
+		gameNameIF.ActivateInputField ();
 
 		x = GameObject.Find ("dbLogin").GetComponent<dbLogin>();
 

@@ -474,10 +474,11 @@ public class dbLogin : MonoBehaviour {
 						int index = response.IndexOf ("<EOF>");
 						playerNames = response.Substring(0, index);
 						playerNames = playerNames.Replace ("mem ","");
+                        response = response.Replace(playerNames + "<EOF>", "");
 						Debug.Log(playerNames);
 						Send (client, "ackn<EOF>");
 						Debug.Log ("Sent ackn to server.");
-						response = response.Substring(index+5);
+						
 					}
 
 					else if (response.Substring(0,3)=="err")

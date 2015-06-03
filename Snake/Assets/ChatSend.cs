@@ -1,21 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+
 public class ChatSend : MonoBehaviour {
 	dbLogin x;
 	InputField chatbox;
 	static Text chatboxText;
+	Button readyButton;
+
 	// Use this for initialization
 	void Start () {
 		x = GameObject.Find ("dbLogin").GetComponent<dbLogin> ();
 		chatbox = GameObject.Find ("ChatInput").GetComponent<InputField> ();
 		chatbox.ActivateInputField ();
 		chatboxText = GameObject.Find ("ChatBox").GetComponent<Text> ();
+		readyButton = GameObject.Find ("Ready button").GetComponent<Button> ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-
 		if (Input.GetKeyDown(KeyCode.Return)) {
 
 			GameObject messageSendGO = GameObject.Find ("ChatInput");
@@ -27,11 +30,13 @@ public class ChatSend : MonoBehaviour {
 			messageSendIF.text="";
 			messageSendIF.ActivateInputField();
 		}
-		chatboxText.text = dbLogin.chatbox;
 
+		chatboxText.text = dbLogin.chatbox;
 	}
+
 	public void Ready()
 	{
 		x.SendToServer ("read<EOF>");
+		readyButton.interactable = false; 
 	}
 }

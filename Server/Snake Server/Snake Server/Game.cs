@@ -44,6 +44,7 @@ namespace Snake_Server
                 if (playerReady[i]==false)
                 {
                     playerReady[i] = true;
+                    return;
                 }
             }
         }
@@ -54,6 +55,7 @@ namespace Snake_Server
                 if (playerReady[i] == true)
                 {
                     playerReady[i] = false;
+                    return;
                 }
             }
         }

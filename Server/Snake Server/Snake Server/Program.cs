@@ -10,7 +10,7 @@ using Snake_Server;
 // State object for reading client data asynchronously
 public class StateObject
 {
-    // Client  socket.
+    // Client socket.
     public Socket workSocket = null;
     // Size of receive buffer.
     public const int BufferSize = 1024;
@@ -589,16 +589,16 @@ public class AsynchronousSocketListener
 
             // Also make sure to add it to the database with the current player as player1
 
-            //try
-            //{
-            //    string query = "INSERT INTO tb_games (gameid, gameName, player1) VALUES (" + (games.Count - 1) + ", '" + gameName + "', '" + player1 + "')";
-            //    SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
-            //    command.ExecuteNonQuery();
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e.ToString());
-            //}
+            try
+            {
+                string query = "INSERT INTO tb_games (gameid, gameName, player1) VALUES (" + (games.Count - 1) + ", '" + gameName + "', '" + player1 + "')";
+                SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
 
             // Join your own game
 
@@ -639,16 +639,16 @@ public class AsynchronousSocketListener
                     {
                         Send(games[i].players[m].playerHandler, lobbyPlayers(games[i], games[i].players[m].playerHandler)+"<EOF>");
                     }
-                    //try
-                    //{
-                    //    string query = "UPDATE tb_games SET player2 = '" + username + "' WHERE gameid = " + i;
-                    //    SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
-                    //    command.ExecuteNonQuery();
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine(e.ToString());
-                    //}
+                    try
+                    {
+                        string query = "UPDATE tb_games SET player2 = '" + username + "' WHERE gameid = " + i;
+                        SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
+                        command.ExecuteNonQuery();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.ToString());
+                    }
 
                     Send(handler, "joi<EOF>");
                     games[i].addLobby();

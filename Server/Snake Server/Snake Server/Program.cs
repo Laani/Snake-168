@@ -178,7 +178,14 @@ public class AsynchronousSocketListener
                     players.Add(new Player(handler, username));
                 }
                 
-
+                else if (content.Substring(0,4)=="chat")
+                {
+                    Console.WriteLine("got a message:");
+                    Console.WriteLine(content.Substring(5, content.Length - 10));
+                    int num = findGameNumWithHandler(handler);
+                    games[num].addChatMessage(content.Substring(5, content.Length - 10));
+                    SendToAllPlayers(games[num].players, games[num].getChatMessages());
+                }
 
                 else if (content.Substring(0, 4) == "ackn")
                 {
@@ -314,6 +321,20 @@ public class AsynchronousSocketListener
                     host(handler, gameName);
 
                 }
+                else if (content.Substring(0,4) == "read")
+                {
+                    int num = findGameNumWithHandler(handler);
+
+                    games[num].changeAReadyToTrue();
+                    if (games[num].allPlayersReady())
+                    {
+                        
+                        SendToAllPlayers(games[num].players, "sta " + games[num].players[0].getPlayerName() + "," + games[num].players[1].getPlayerName() + "<EOF>");
+                        
+                    }
+
+                }
+
                 else if (content.Substring(0, 4) == "join")
                 {
                     string gameName = content.Substring(5, content.Length - 10);
@@ -333,7 +354,7 @@ public class AsynchronousSocketListener
                                 string player1 = "";
                                 string player2 = "";
 
-                                if (games[i].inLobby() == 2)
+                                if (games[i].inLobby() == 2) //kathy
                                 {
                                     try
                                     {
@@ -352,8 +373,8 @@ public class AsynchronousSocketListener
                                         Console.WriteLine(e.ToString());
                                     }
 
-                                    // Now there are two players -- tell the clients to start the game!
-                                    SendToAllPlayers(games[i].players, "sta " + player1 + "," + player2 + "<EOF>");
+                                //    // Now there are two players -- tell the clients to start the game!
+                                //    //SendToAllPlayers(games[i].players, "sta " + player1 + "," + player2 + "<EOF>");
                                 }
                             }
                         }
@@ -569,16 +590,16 @@ public class AsynchronousSocketListener
 
             // Also make sure to add it to the database with the current player as player1
 
-            try
-            {
-                string query = "INSERT INTO tb_games (gameid, gameName, player1) VALUES (" + (games.Count - 1) + ", '" + gameName + "', '" + player1 + "')";
-                SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
-                command.ExecuteNonQuery();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
+            //try
+            //{
+            //    string query = "INSERT INTO tb_games (gameid, gameName, player1) VALUES (" + (games.Count - 1) + ", '" + gameName + "', '" + player1 + "')";
+            //    SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
+            //    command.ExecuteNonQuery();
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine(e.ToString());
+            //}
 
             // Join your own game
 
@@ -616,16 +637,16 @@ public class AsynchronousSocketListener
                     games[i].addPlayer(handler, username);
                     playerNames += username;
 
-                    try
-                    {
-                        string query = "UPDATE tb_games SET player2 = '" + username + "' WHERE gameid = " + i;
-                        SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
-                        command.ExecuteNonQuery();
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.ToString());
-                    }
+                    //try
+                    //{
+                    //    string query = "UPDATE tb_games SET player2 = '" + username + "' WHERE gameid = " + i;
+                    //    SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
+                    //    command.ExecuteNonQuery();
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Console.WriteLine(e.ToString());
+                    //}
 
                     Send(handler, "joi<EOF>");
                     games[i].addLobby();

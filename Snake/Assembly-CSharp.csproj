@@ -46,6 +46,8 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\ChatSend.cs" />
+     <Compile Include="Assets\InputFieldHandler.cs" />
      <Compile Include="Assets\LobbyScreen.cs" />
      <Compile Include="Assets\Manager.cs" />
      <Compile Include="Assets\Snake.cs" />

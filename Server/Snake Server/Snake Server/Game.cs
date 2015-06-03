@@ -15,6 +15,9 @@ namespace Snake_Server
         bool started = false;
         private String gameName;
         List<String> playerNum = new List<String>() { "one<EOF>", "two<EOF>", "three<EOF>", "four<EOF>" };
+        List<string> chatMessages = new List<string>();
+        
+        List<bool> playerReady = new List<bool>() { false, false };
 
         public Game()
         {
@@ -34,7 +37,38 @@ namespace Snake_Server
             numOfPlayers++;
             this.gameName = gameName;
         }
-    
+        public void changeAReadyToTrue()
+        {
+            for (int i =0; i<playerReady.Count;i++)
+            {
+                if (playerReady[i]==false)
+                {
+                    playerReady[i] = true;
+                }
+            }
+        }
+        public void changeAReadyToFalse()
+        {
+            for (int i = 0; i < playerReady.Count; i++)
+            {
+                if (playerReady[i] == true)
+                {
+                    playerReady[i] = false;
+                }
+            }
+        }
+
+        public bool allPlayersReady()
+        {
+            for (int i = 0; i<playerReady.Count;i++)
+            {
+                if (playerReady[i]==false)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
         public List<Player> playerHandlers()
         {
             return players;
@@ -43,6 +77,25 @@ namespace Snake_Server
         public String getGameName()
         {
             return gameName;
+        }
+        public void addChatMessage(string message)
+        {
+            chatMessages.Add(message);
+            if (chatMessages.Count>5)
+            {
+                chatMessages.RemoveAt(0);
+            }
+        }
+        public string getChatMessages()
+        {
+            string chatBox="cha ";
+            for (int i = 0; i < chatMessages.Count;i++ )
+            {
+                chatBox += chatMessages[i];
+                chatBox += "\n";
+            }
+            chatBox += "<EOF>";
+            return chatBox;
         }
         //public String addPlayer(Socket handler)
         //{
